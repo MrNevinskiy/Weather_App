@@ -5,4 +5,5 @@
     <string name="temperature" translatable="false">Температура</string>
     <string name="date" translatable="false">Дата</string>
     <string name="update">Обновлено</string>
+    <string name="test">TODO</string>
 </resources>

@@ -4,4 +4,5 @@
     <string name="temperature">Temperature</string>
     <string name="date">Date</string>
     <string name="update">update</string>
+    <string name="test">TODO</string>
 </resources>
