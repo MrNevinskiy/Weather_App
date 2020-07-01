@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Погода</string>
-    <string name="city" translatable="false">Город</string>
-    <string name="temperature" translatable="false">Температура</string>
-    <string name="date" translatable="false">Дата</string>
-    <string name="update">Обновлено</string>
-    <string name="test">TODO</string>
+    <string name="City" translatable="false">Город</string>
+    <string name="Temperature" translatable="false">Температура</string>
+    <string name="Date" translatable="false">Дата</string>
+    <string name="Update">Обновлено</string>
+    <string name="night">Ночной режим</string>
+    <string name="wind_speed">Скорость ветра</string>
+    <string name="pressure">Давление</string>
 </resources>

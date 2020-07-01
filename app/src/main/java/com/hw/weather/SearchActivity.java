@@ -7,11 +7,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.CheckBox;
-import android.widget.Switch;
 import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity {
+public class SearchActivity extends AppCompatActivity {
 
     private final String onCreate = "В данный момент onCreate";
     private final String onStart = "В данный момент onStart";
@@ -23,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_search);
         Toast.makeText(this, onCreate,Toast.LENGTH_SHORT).show();
         Log.d(String.valueOf(this), onCreate);
     }
@@ -63,18 +61,17 @@ public class MainActivity extends AppCompatActivity {
         Log.d(String.valueOf(this), onDestroy);
     }
 
-    public void searchOnClick(View view) {
-        Intent intent = new Intent(this, SearchActivity.class);
+    public void toMainActivity(View view) {
+        Toast.makeText(this, "Назад",Toast.LENGTH_SHORT).show();
+        Log.d(String.valueOf(this), "toMainActivity");
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         startActivity(intent);
-        Toast.makeText(this, "searchOnClick",Toast.LENGTH_SHORT).show();
-        Log.d(String.valueOf(this), "searchOnClick");
     }
 
-    public void settingOnClick(View view) {
-        Intent intent = new Intent(this, MySettingsActivity.class);
-        startActivity(intent);
-        Toast.makeText(this, "settingOnClick",Toast.LENGTH_SHORT).show();
-        Log.d(String.valueOf(this), "settingOnClick");
+    public void searchCity(View view) {
+        Toast.makeText(this, "Тут будет поиск города",Toast.LENGTH_SHORT).show();
+        Log.d(String.valueOf(this), onStart);
     }
 
 }
