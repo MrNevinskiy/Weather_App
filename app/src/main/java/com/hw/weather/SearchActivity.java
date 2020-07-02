@@ -1,12 +1,13 @@
 package com.hw.weather;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
 
 public class SearchActivity extends AppCompatActivity {
@@ -18,12 +19,19 @@ public class SearchActivity extends AppCompatActivity {
     private final String onStop = "В данный момент onStop";
     private final String onDestroy = "В данный момент onDestroy";
 
+    Singleton singleton;
+
+    public String test() throws NullPointerException{
+        EditText editText = (EditText)findViewById(R.id.textView);
+        return editText.getText().toString();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_search);
         Toast.makeText(this, onCreate,Toast.LENGTH_SHORT).show();
         Log.d(String.valueOf(this), onCreate);
+        setContentView(R.layout.activity_search);
     }
 
     @Override
@@ -61,6 +69,18 @@ public class SearchActivity extends AppCompatActivity {
         Log.d(String.valueOf(this), onDestroy);
     }
 
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("city", test());
+    }
+
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        savedInstanceState.getString("city");
+    }
+
     public void toMainActivity(View view) {
         Toast.makeText(this, "Назад",Toast.LENGTH_SHORT).show();
         Log.d(String.valueOf(this), "toMainActivity");
@@ -73,5 +93,4 @@ public class SearchActivity extends AppCompatActivity {
         Toast.makeText(this, "Тут будет поиск города",Toast.LENGTH_SHORT).show();
         Log.d(String.valueOf(this), onStart);
     }
-
 }

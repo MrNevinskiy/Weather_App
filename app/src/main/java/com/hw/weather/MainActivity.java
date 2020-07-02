@@ -77,4 +77,9 @@ public class MainActivity extends AppCompatActivity {
         Log.d(String.valueOf(this), "settingOnClick");
     }
 
+    public void pressure(View view) {
+        boolean checked = ((CheckBox) view).isChecked();
+        findViewById(R.id.pressure).setVisibility(checked ? View.GONE : View.VISIBLE);
+        Log.d(String.valueOf(this), "pressure");
+    }
 }

@@ -1,7 +1,6 @@
 package com.hw.weather;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,7 +9,6 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.Toast;
 
-import static androidx.appcompat.app.AppCompatDelegate.*;
 
 public class MySettingsActivity extends AppCompatActivity {
 
@@ -75,18 +73,20 @@ public class MySettingsActivity extends AppCompatActivity {
     }
 
     public void nightActivity(View view) {
-        // TODO: 01.07.2020  
+        // TODO: 01.07.2020
     }
 
     public void windSpeed(View view) {
         // Выкидывает из приложения
         boolean checked = ((CheckBox) view).isChecked();
         mainActivity.findViewById(R.id.windSpeed).setVisibility(checked ? View.GONE : View.VISIBLE);
+        Log.d(String.valueOf(this), "windSpeed");
     }
 
     public void pressure(View view) {
         // Выкидывает из приложения
         boolean checked = ((CheckBox) view).isChecked();
         mainActivity.findViewById(R.id.pressure).setVisibility(checked ? View.GONE : View.VISIBLE);
+        Log.d(String.valueOf(this), "pressure");
     }
 }
