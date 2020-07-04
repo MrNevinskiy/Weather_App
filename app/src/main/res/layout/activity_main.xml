@@ -8,7 +8,9 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        tools:layout_editor_absoluteX="-35dp"
+        tools:layout_editor_absoluteY="-85dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -68,18 +70,18 @@
                 android:id="@+id/testImageView"
                 android:layout_width="107dp"
                 android:layout_height="148dp"
+                android:contentDescription="@null"
                 app:layout_constraintBottom_toTopOf="@+id/temperature"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/date"
-                app:srcCompat="@drawable/hotpng_com"
-                android:contentDescription="TODO" />
+                app:srcCompat="@drawable/hotpng_com" />
 
             <ImageView
                 android:id="@+id/searchOnClick"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:contentDescription="TODO"
+                android:contentDescription="@string/search"
                 android:onClick="searchOnClick"
                 app:layout_constraintBottom_toBottomOf="@+id/city"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -94,6 +96,7 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:onClick="settingOnClick"
+                android:contentDescription="@string/setting"
                 app:layout_constraintBottom_toBottomOf="@+id/city"
                 app:layout_constraintEnd_toStartOf="@+id/city"
                 app:layout_constraintHorizontal_bias="0.577"
@@ -126,19 +129,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/windSpeed"
                 app:layout_constraintVertical_bias="0.094" />
-
-            <CheckBox
-                android:id="@+id/checkBox"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/pressure"
-                android:onClick="pressure"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.52"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/pressure"
-                app:layout_constraintVertical_bias="0.857" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

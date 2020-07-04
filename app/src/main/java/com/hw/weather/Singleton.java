@@ -3,21 +3,23 @@ package com.hw.weather;
 
 public class Singleton {
 
-    private static Singleton singleton = null;
-    private String city = null;
+    private static Singleton instance;
+    public String value;
 
-    private Singleton(){
+    private Singleton(String value) {
+        // Этот код эмулирует медленную инициализацию.
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException ex) {
+            ex.printStackTrace();
+        }
+        this.value = value;
     }
 
-    public String getString() throws  NullPointerException {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    public static Singleton getSingleton() {
-            return singleton = singleton == null ? new Singleton() : singleton;
+    public static Singleton getInstance(String value) {
+        if (instance == null) {
+            instance = new Singleton(value);
+        }
+        return instance;
     }
 }
