@@ -35,14 +35,14 @@
                 android:id="@+id/windSpeed"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:text="@string/wind_speed"
+                android:text="@string/wind_speedBox"
                 android:onClick="windSpeed"/>
 
             <CheckBox
                 android:id="@+id/pressure"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:text="@string/pressure"
+                android:text="@string/pressureBox"
                 android:onClick="pressure"/>
 
             <Button

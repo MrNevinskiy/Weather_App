@@ -9,8 +9,8 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:layout_editor_absoluteX="-35dp"
-        tools:layout_editor_absoluteY="-85dp">
+        tools:layout_editor_absoluteX="-33dp"
+        tools:layout_editor_absoluteY="0dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -18,23 +18,11 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/update"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/Update"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintHorizontal_bias="0.982"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.604" />
-
-            <TextView
                 android:id="@+id/city"
                 android:layout_width="240dp"
                 android:layout_height="40dp"
                 android:layout_marginTop="20dp"
-                android:text="@string/City"
+                android:text="@string/city"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.498"
                 app:layout_constraintStart_toStartOf="parent"
@@ -45,20 +33,18 @@
                 android:layout_width="240dp"
                 android:layout_height="60dp"
                 android:layout_marginTop="250dp"
-                android:text="@string/Temperature"
-                app:layout_constraintBottom_toTopOf="@+id/update"
+                android:text="@string/temperature"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.497"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/city"
-                app:layout_constraintVertical_bias="1.0" />
+                app:layout_constraintTop_toBottomOf="@+id/city" />
 
             <TextView
                 android:id="@+id/date"
                 android:layout_width="240dp"
                 android:layout_height="40dp"
                 android:layout_marginTop="10dp"
-                android:text="@string/Date"
+                android:text="@string/date"
                 app:layout_constraintBottom_toTopOf="@+id/temperature"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.498"
@@ -67,7 +53,7 @@
                 app:layout_constraintVertical_bias="0.101" />
 
             <ImageView
-                android:id="@+id/testImageView"
+                android:id="@+id/cloudy"
                 android:layout_width="107dp"
                 android:layout_height="148dp"
                 android:contentDescription="@null"
@@ -75,7 +61,8 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/date"
-                app:srcCompat="@drawable/hotpng_com" />
+                app:layout_constraintVertical_bias="0.608"
+                app:srcCompat="@drawable/cloudy_times" />
 
             <ImageView
                 android:id="@+id/searchOnClick"
@@ -95,8 +82,8 @@
                 android:id="@+id/setting"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:onClick="settingOnClick"
                 android:contentDescription="@string/setting"
+                android:onClick="settingOnClick"
                 app:layout_constraintBottom_toBottomOf="@+id/city"
                 app:layout_constraintEnd_toStartOf="@+id/city"
                 app:layout_constraintHorizontal_bias="0.577"
@@ -125,10 +112,38 @@
                 android:text="@string/pressure"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.24"
+                app:layout_constraintHorizontal_bias="0.239"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/windSpeed"
                 app:layout_constraintVertical_bias="0.094" />
+
+            <ImageButton
+                android:id="@+id/infoCity"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:contentDescription="@string/info_city"
+                android:onClick="infoCity"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.465"
+                app:layout_constraintStart_toEndOf="@+id/pressure"
+                app:layout_constraintTop_toBottomOf="@+id/pressure"
+                app:layout_constraintVertical_bias="1.0"
+                app:srcCompat="@android:drawable/ic_menu_info_details" />
+
+            <ImageButton
+                android:id="@+id/icon_about"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:contentDescription="@string/icon_about"
+                android:onClick="iconAbout"
+                app:layout_constraintBottom_toBottomOf="@+id/infoCity"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.384"
+                app:layout_constraintStart_toEndOf="@+id/infoCity"
+                app:layout_constraintTop_toTopOf="@+id/infoCity"
+                app:layout_constraintVertical_bias="0.0"
+                app:srcCompat="@mipmap/ic_launcher_foreground" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
