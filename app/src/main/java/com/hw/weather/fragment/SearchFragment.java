@@ -1,4 +1,4 @@
-package com.hw.weather;
+package com.hw.weather.fragment;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -12,6 +12,10 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
+
+import com.hw.weather.Constants;
+import com.hw.weather.MainActivity;
+import com.hw.weather.R;
 
 import java.util.Date;
 
@@ -55,7 +59,7 @@ public class SearchFragment extends Fragment implements Constants {
         Date date = new Date();
         String DATE = date.toString();
         SharedPreferences.Editor editor = mSetting.edit();
-        editor.putString(APP_PREFERENCES_TEMPERATURE,"Температура на улице 36°");
+        editor.putString(APP_PREFERENCES_TEMPERATURE,"Температура на улице 38°");
         editor.putString(APP_PREFERENCES_DATE,DATE);
         editor.putString(APP_PREFERENCES_UPDATE,DATE);
         editor.putString(APP_PREFERENCES_PRESSURE_INFO,"Давление 759.00 мм. ");

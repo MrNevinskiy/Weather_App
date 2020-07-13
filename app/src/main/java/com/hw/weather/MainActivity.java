@@ -4,6 +4,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
 import android.os.Bundle;
 import android.util.Log;
+
+import com.hw.weather.fragment.MainFragment;
+import com.hw.weather.fragment.MySettingFragment;
+import com.hw.weather.fragment.SearchFragment;
+
 import java.util.Date;
 
 public class MainActivity extends AppCompatActivity implements Constants {
@@ -26,7 +31,6 @@ public class MainActivity extends AppCompatActivity implements Constants {
         MainFragment mainFragment = new MainFragment();
         ft.replace(R.id.test_replace, mainFragment);
         ft.commit();
-
     }
 
     public void startFragment(int item) {

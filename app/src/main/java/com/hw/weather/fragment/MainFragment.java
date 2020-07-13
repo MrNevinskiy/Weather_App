@@ -1,4 +1,4 @@
-package com.hw.weather;
+package com.hw.weather.fragment;
 
 import android.content.Context;
 import android.content.Intent;
@@ -17,6 +17,10 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.hw.weather.Constants;
+import com.hw.weather.MainActivity;
+import com.hw.weather.R;
+
 import java.util.Date;
 
 public class MainFragment extends Fragment implements Constants {
@@ -33,8 +37,8 @@ public class MainFragment extends Fragment implements Constants {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        mSetting = getActivity().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
         setting();
-        city();
         ImageButton search = view.findViewById(R.id.searchOnClick);
         search.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,12 +79,21 @@ public class MainFragment extends Fragment implements Constants {
     public void setting() {
         Date date = new Date();
         String DATE = date.toString();
-        mSetting = getActivity().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
+        if(mSetting.contains(APP_PREFERENCES_CITY)){
+            TextView textView = (TextView)getActivity().findViewById(R.id.cityFragment);
+            textView.setText(mSetting.getString(APP_PREFERENCES_CITY, ""));
+        }
         if(mSetting.contains(APP_PREFERENCES_PRESSURE)){
             getActivity().findViewById(R.id.pressureFragment).setVisibility((mSetting.getBoolean(APP_PREFERENCES_PRESSURE,true)) ? View.GONE : View.VISIBLE);
         }
         if(mSetting.contains(APP_PREFERENCES_WIND_SPEED)){
             getActivity().findViewById(R.id.windSpeedFragment).setVisibility((mSetting.getBoolean(APP_PREFERENCES_WIND_SPEED,true)) ? View.GONE : View.VISIBLE);
+        }
+        if(mSetting.contains(APP_PREFERENCES_PRESSURE)){
+            getActivity().findViewById(R.id.pressureFragment2).setVisibility((mSetting.getBoolean(APP_PREFERENCES_PRESSURE,true)) ? View.GONE : View.VISIBLE);
+        }
+        if(mSetting.contains(APP_PREFERENCES_WIND_SPEED)){
+            getActivity().findViewById(R.id.windSpeedFragment2).setVisibility((mSetting.getBoolean(APP_PREFERENCES_WIND_SPEED,true)) ? View.GONE : View.VISIBLE);
         }
         if(mSetting.contains(APP_PREFERENCES_TEMPERATURE)) {
             TextView textView = (TextView) getActivity().findViewById(R.id.temperatureFragment);
@@ -98,12 +111,21 @@ public class MainFragment extends Fragment implements Constants {
             TextView textView = (TextView) getActivity().findViewById(R.id.windSpeedFragment);
             textView.setText(mSetting.getString(APP_PREFERENCES_WIND_SPEED_INFO,"Скорость ветра 2 м.с "));
         }
-    }
-
-    public void city() {
-        if(mSetting.contains(APP_PREFERENCES_CITY)){
-            TextView textView = (TextView)getActivity().findViewById(R.id.cityFragment);
-            textView.setText(mSetting.getString(APP_PREFERENCES_CITY, ""));
+        if(mSetting.contains(APP_PREFERENCES_TEMPERATURE)) {
+            TextView textView = (TextView) getActivity().findViewById(R.id.temperatureFragment2);
+            textView.setText(mSetting.getString(APP_PREFERENCES_TEMPERATURE,"Температура на улице 36°"));
+        }
+        if(mSetting.contains(APP_PREFERENCES_DATE)) {
+            TextView textView = (TextView) getActivity().findViewById(R.id.dateFragment2);
+            textView.setText(mSetting.getString(APP_PREFERENCES_DATE,DATE));
+        }
+        if(mSetting.contains(APP_PREFERENCES_PRESSURE_INFO)) {
+            TextView textView = (TextView) getActivity().findViewById(R.id.pressureFragment2);
+            textView.setText(mSetting.getString(APP_PREFERENCES_PRESSURE_INFO,"Давление 759.00 мм. "));
+        }
+        if(mSetting.contains(APP_PREFERENCES_WIND_SPEED_INFO)) {
+            TextView textView = (TextView) getActivity().findViewById(R.id.windSpeedFragment2);
+            textView.setText(mSetting.getString(APP_PREFERENCES_WIND_SPEED_INFO,"Скорость ветра 2 м.с "));
         }
     }
 }

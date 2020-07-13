@@ -1,4 +1,4 @@
-package com.hw.weather;
+package com.hw.weather.fragment;
 
 
 import android.content.Context;
@@ -14,6 +14,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.Switch;
+
+import com.hw.weather.Constants;
+import com.hw.weather.MainActivity;
+import com.hw.weather.R;
 
 
 public class MySettingFragment extends Fragment implements Constants {
