@@ -39,56 +39,6 @@ public class MySettingsActivity extends AppCompatActivity implements Constants {
         }
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        Toast.makeText(this, onStart, Toast.LENGTH_SHORT).show();
-        Log.d(String.valueOf(this), onStart);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Toast.makeText(this, onResume, Toast.LENGTH_SHORT).show();
-        Log.d(String.valueOf(this), onResume);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        Toast.makeText(this, onPause, Toast.LENGTH_SHORT).show();
-        Log.d(String.valueOf(this), onPause);
-        save();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        Toast.makeText(this, onStop, Toast.LENGTH_SHORT).show();
-        Log.d(String.valueOf(this), onStop);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Toast.makeText(this, onDestroy, Toast.LENGTH_SHORT).show();
-        Log.d(String.valueOf(this), onDestroy);
-    }
-
-    @Override
-    protected void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-//        outState.putBoolean(APP_PREFERENCES_WIND_SPEED,((CheckBox)findViewById(R.id.windSpeed)).isChecked());
-//        outState.putBoolean(APP_PREFERENCES_PRESSURE,((CheckBox)findViewById(R.id.pressure)).isChecked());
-    }
-
-    @Override
-    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-//        savedInstanceState.getBoolean(APP_PREFERENCES_WIND_SPEED, true);
-//        savedInstanceState.getBoolean(APP_PREFERENCES_PRESSURE, true);
-    }
-
     public void toMainActivity(View view) {
         Toast.makeText(this, "Назад", Toast.LENGTH_SHORT).show();
         Log.d(String.valueOf(this), "toMainActivity");
@@ -99,23 +49,15 @@ public class MySettingsActivity extends AppCompatActivity implements Constants {
 
     public void windSpeed(View view) {
         Log.d(String.valueOf(this), "windSpeed");
-//        boolean checked1 = ((CheckBox) view).isChecked();
-//        Intent intent = new Intent(this, MainActivity.class);
-//        intent.putExtra("WS", checked1);
-//        startActivity(intent);
     }
 
     public void pressure(View view) {
         Log.d(String.valueOf(this), "pressure");
-//        boolean checked2 = ((CheckBox) view).isChecked();
-//        Intent intent = new Intent(this, MainActivity.class);
-//        intent.putExtra("PS", checked2);
-//        startActivity(intent);
+
     }
 
     public void nightActivity(View view) {
         Log.d(String.valueOf(this), "nightActivity");
-        // TODO: 01.07.2020
     }
 
     public void saveOnClick(View view) {

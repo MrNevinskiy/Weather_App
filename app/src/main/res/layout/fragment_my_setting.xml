@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:context=".MySettingFragment">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <Switch
+                android:id="@+id/nightActivityFragment"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:text="@string/night" />
+
+            <CheckBox
+                android:id="@+id/windSpeedFragmentSetting"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:text="@string/wind_speedBox" />
+
+            <CheckBox
+                android:id="@+id/pressureFragmentSetting"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:text="@string/pressureBox" />
+
+            <Button
+                android:id="@+id/saveSettingFragment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/save" />
+        </LinearLayout>
+    </ScrollView>
+</FrameLayout>
