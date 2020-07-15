@@ -1,6 +1,7 @@
 package com.hw.weather;
 
 public interface Constants {
+
     String onCreate = "В данный момент onCreate";
     String onStart = "В данный момент onStart";
     String onResume = "В данный момент onResume";
@@ -18,4 +19,5 @@ public interface Constants {
     String APP_PREFERENCES_NIGHT = "night activity";
     String APP_PREFERENCES_WIND_SPEED_INFO = "wind speed info";
     String APP_PREFERENCES_PRESSURE_INFO = "pressure info";
+
 }

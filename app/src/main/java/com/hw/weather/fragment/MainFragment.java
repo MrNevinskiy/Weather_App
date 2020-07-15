@@ -21,7 +21,7 @@ import com.hw.weather.Constants;
 import com.hw.weather.MainActivity;
 import com.hw.weather.R;
 
-import java.util.Date;
+import java.util.Objects;
 
 public class MainFragment extends Fragment implements Constants {
 
@@ -30,58 +30,42 @@ public class MainFragment extends Fragment implements Constants {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_main, container, false);
-        return view;
+        return inflater.inflate(R.layout.fragment_main, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mSetting = getActivity().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
-        setting();
+
+        getPrefSetting();
+
         ImageButton search = view.findViewById(R.id.searchOnClick);
-        search.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ((MainActivity)getActivity()).startFragment(3);
-            }
-        });
+        search.setOnClickListener((View view1) -> ((MainActivity) getActivity()).startFragment(3));
+
         ImageButton setting = view.findViewById(R.id.settingOnClick);
-        setting.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ((MainActivity)getActivity()).startFragment(2);
-            }
-        });
+        setting.setOnClickListener((View view2) -> ((MainActivity) getActivity()).startFragment(2));
+
         ImageButton infoCity = view.findViewById(R.id.infoCity);
-        infoCity.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String city = null;
-                if(mSetting.contains(APP_PREFERENCES_CITY)) {
-                    city = (mSetting.getString(APP_PREFERENCES_CITY, "  "));
-                }
-                String url = "https://www.ya.ru/" + city;
-                Uri uri = Uri.parse(url);
-                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                startActivity(intent);
-            }
+        infoCity.setOnClickListener((View view3) -> {
+            mSetting = getActivity().getPreferences(Context.MODE_PRIVATE);
+            String city = (Objects.requireNonNull(mSetting.getString(APP_PREFERENCES_CITY, "City")));
+            String url = "https://www.google.ru/search?newwindow=1&q=" + city;
+            Uri uri = Uri.parse(url);
+            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+            startActivity(intent);
         });
+
         ImageButton about = view.findViewById(R.id.icon_about);
-        about.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(getActivity(), "http://www.freepik.com / Designed by Dimas_sugih / Freepik", Toast.LENGTH_LONG).show();
-            }
+        about.setOnClickListener((View view4) -> {
+            Toast.makeText(getActivity(), "http://www.freepik.com / Designed by Dimas_sugih / Freepik", Toast.LENGTH_LONG).show();
         });
     }
 
-    public void setting() {
-        Date date = new Date();
-        String DATE = date.toString();
+    public void getPrefSetting() {
+        mSetting = getActivity().getPreferences(Context.MODE_PRIVATE);
         if(mSetting.contains(APP_PREFERENCES_CITY)){
             TextView textView = (TextView)getActivity().findViewById(R.id.cityFragment);
-            textView.setText(mSetting.getString(APP_PREFERENCES_CITY, ""));
+            textView.setText(mSetting.getString(APP_PREFERENCES_CITY, "City"));
         }
         if(mSetting.contains(APP_PREFERENCES_PRESSURE)){
             getActivity().findViewById(R.id.pressureFragment).setVisibility((mSetting.getBoolean(APP_PREFERENCES_PRESSURE,true)) ? View.GONE : View.VISIBLE);
@@ -89,43 +73,21 @@ public class MainFragment extends Fragment implements Constants {
         if(mSetting.contains(APP_PREFERENCES_WIND_SPEED)){
             getActivity().findViewById(R.id.windSpeedFragment).setVisibility((mSetting.getBoolean(APP_PREFERENCES_WIND_SPEED,true)) ? View.GONE : View.VISIBLE);
         }
-        if(mSetting.contains(APP_PREFERENCES_PRESSURE)){
-            getActivity().findViewById(R.id.pressureFragment2).setVisibility((mSetting.getBoolean(APP_PREFERENCES_PRESSURE,true)) ? View.GONE : View.VISIBLE);
-        }
-        if(mSetting.contains(APP_PREFERENCES_WIND_SPEED)){
-            getActivity().findViewById(R.id.windSpeedFragment2).setVisibility((mSetting.getBoolean(APP_PREFERENCES_WIND_SPEED,true)) ? View.GONE : View.VISIBLE);
-        }
         if(mSetting.contains(APP_PREFERENCES_TEMPERATURE)) {
             TextView textView = (TextView) getActivity().findViewById(R.id.temperatureFragment);
-            textView.setText(mSetting.getString(APP_PREFERENCES_TEMPERATURE,"Температура на улице 36°"));
+            textView.setText(mSetting.getString(APP_PREFERENCES_TEMPERATURE,"Температура 36°"));
         }
         if(mSetting.contains(APP_PREFERENCES_DATE)) {
             TextView textView = (TextView) getActivity().findViewById(R.id.dateFragment);
-            textView.setText(mSetting.getString(APP_PREFERENCES_DATE,DATE));
+            textView.setText(mSetting.getString(APP_PREFERENCES_DATE,"DATE"));
         }
         if(mSetting.contains(APP_PREFERENCES_PRESSURE_INFO)) {
             TextView textView = (TextView) getActivity().findViewById(R.id.pressureFragment);
-            textView.setText(mSetting.getString(APP_PREFERENCES_PRESSURE_INFO,"Давление 759.00 мм. "));
+            textView.setText(mSetting.getString(APP_PREFERENCES_PRESSURE_INFO,"Давление 759.00 мм."));
         }
         if(mSetting.contains(APP_PREFERENCES_WIND_SPEED_INFO)) {
             TextView textView = (TextView) getActivity().findViewById(R.id.windSpeedFragment);
-            textView.setText(mSetting.getString(APP_PREFERENCES_WIND_SPEED_INFO,"Скорость ветра 2 м.с "));
-        }
-        if(mSetting.contains(APP_PREFERENCES_TEMPERATURE)) {
-            TextView textView = (TextView) getActivity().findViewById(R.id.temperatureFragment2);
-            textView.setText(mSetting.getString(APP_PREFERENCES_TEMPERATURE,"Температура на улице 36°"));
-        }
-        if(mSetting.contains(APP_PREFERENCES_DATE)) {
-            TextView textView = (TextView) getActivity().findViewById(R.id.dateFragment2);
-            textView.setText(mSetting.getString(APP_PREFERENCES_DATE,DATE));
-        }
-        if(mSetting.contains(APP_PREFERENCES_PRESSURE_INFO)) {
-            TextView textView = (TextView) getActivity().findViewById(R.id.pressureFragment2);
-            textView.setText(mSetting.getString(APP_PREFERENCES_PRESSURE_INFO,"Давление 759.00 мм. "));
-        }
-        if(mSetting.contains(APP_PREFERENCES_WIND_SPEED_INFO)) {
-            TextView textView = (TextView) getActivity().findViewById(R.id.windSpeedFragment2);
-            textView.setText(mSetting.getString(APP_PREFERENCES_WIND_SPEED_INFO,"Скорость ветра 2 м.с "));
+            textView.setText(mSetting.getString(APP_PREFERENCES_WIND_SPEED_INFO,"Скорость ветра 2 м.с"));
         }
     }
 }
