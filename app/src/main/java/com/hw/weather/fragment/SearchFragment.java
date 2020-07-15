@@ -57,8 +57,8 @@ public class SearchFragment extends Fragment implements Constants {
         SharedPreferences.Editor editor = mSetting.edit();
         editor.putString(APP_PREFERENCES_CITY, city);
         editor.putString(APP_PREFERENCES_TEMPERATURE,"Температура 36°");
-        editor.putString(APP_PREFERENCES_DATE,"DATE");
-        editor.putString(APP_PREFERENCES_UPDATE,"DATE");
+        editor.putString(APP_PREFERENCES_DATE,"Сегодня");
+        editor.putString(APP_PREFERENCES_UPDATE,"Сегодня");
         editor.putString(APP_PREFERENCES_PRESSURE_INFO,"Давление 759.00 мм.");
         editor.putString(APP_PREFERENCES_WIND_SPEED_INFO,"Скорость ветра 2 м.с");
         editor.apply();

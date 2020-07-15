@@ -15,4 +15,11 @@
     <string name="save">Сохранить</string>
     <string name="wind_speedBox">Скрыть скорость ветра</string>
     <string name="pressureBox">Скрыть Давление</string>
+
+    <string-array name="date">
+        <item>16.07</item>
+        <item>17.07</item>
+        <item>18.07</item>
+    </string-array>
+
 </resources>

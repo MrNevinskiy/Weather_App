@@ -8,7 +8,11 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +24,8 @@ import android.widget.Toast;
 import com.hw.weather.Constants;
 import com.hw.weather.MainActivity;
 import com.hw.weather.R;
+import com.hw.weather.SourceList;
+import com.hw.weather.WeatherList;
 
 import java.util.Objects;
 
@@ -36,6 +42,9 @@ public class MainFragment extends Fragment implements Constants {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        SourceList weatherList = new SourceList(getResources());
+        getCityList(weatherList.build(), view);
 
         getPrefSetting();
 
@@ -61,6 +70,22 @@ public class MainFragment extends Fragment implements Constants {
         });
     }
 
+    public void getCityList(SourceList sourceList, View view){
+        RecyclerView recyclerView = getActivity().findViewById(R.id.weatherListMain);
+        recyclerView.setHasFixedSize(true);
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this.getContext());
+        linearLayoutManager.setOrientation(RecyclerView.HORIZONTAL);
+        recyclerView.setLayoutManager(linearLayoutManager);
+
+        WeatherList weatherList = new WeatherList(sourceList);
+        recyclerView.setAdapter(weatherList);
+
+        DividerItemDecoration itemDecoration = new DividerItemDecoration(recyclerView.getContext(),  linearLayoutManager.getOrientation());
+        itemDecoration.setDrawable(ContextCompat.getDrawable(getContext(), R.drawable.separator));
+        recyclerView.addItemDecoration(itemDecoration);
+    }
+
     public void getPrefSetting() {
         mSetting = getActivity().getPreferences(Context.MODE_PRIVATE);
         if(mSetting.contains(APP_PREFERENCES_CITY)){
@@ -75,7 +100,7 @@ public class MainFragment extends Fragment implements Constants {
         }
         if(mSetting.contains(APP_PREFERENCES_TEMPERATURE)) {
             TextView textView = (TextView) getActivity().findViewById(R.id.temperatureFragment);
-            textView.setText(mSetting.getString(APP_PREFERENCES_TEMPERATURE,"Температура 36°"));
+            textView.setText(mSetting.getString(APP_PREFERENCES_TEMPERATURE,"Температура 22°"));
         }
         if(mSetting.contains(APP_PREFERENCES_DATE)) {
             TextView textView = (TextView) getActivity().findViewById(R.id.dateFragment);
@@ -83,11 +108,11 @@ public class MainFragment extends Fragment implements Constants {
         }
         if(mSetting.contains(APP_PREFERENCES_PRESSURE_INFO)) {
             TextView textView = (TextView) getActivity().findViewById(R.id.pressureFragment);
-            textView.setText(mSetting.getString(APP_PREFERENCES_PRESSURE_INFO,"Давление 759.00 мм."));
+            textView.setText(mSetting.getString(APP_PREFERENCES_PRESSURE_INFO,"Давление 739.00 мм."));
         }
         if(mSetting.contains(APP_PREFERENCES_WIND_SPEED_INFO)) {
             TextView textView = (TextView) getActivity().findViewById(R.id.windSpeedFragment);
-            textView.setText(mSetting.getString(APP_PREFERENCES_WIND_SPEED_INFO,"Скорость ветра 2 м.с"));
+            textView.setText(mSetting.getString(APP_PREFERENCES_WIND_SPEED_INFO,"Скорость ветра 5 м.с"));
         }
     }
 }
