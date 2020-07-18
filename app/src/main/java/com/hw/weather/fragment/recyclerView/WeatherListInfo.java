@@ -1,4 +1,6 @@
-package com.hw.weather;
+package com.hw.weather.fragment.recyclerView;
+
+import com.hw.weather.Constants;
 
 public class WeatherListInfo implements Constants {
 

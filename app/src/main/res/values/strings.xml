@@ -17,6 +17,7 @@
     <string name="info_city" translatable="false">Info city</string>
     <string name="icon_about" translatable="false">Icon about</string>
     <string name="cloudy_times" translatable="false" />
+    <string name="home">Home</string>
 
     <string-array name="date">
         <item>16.07</item>

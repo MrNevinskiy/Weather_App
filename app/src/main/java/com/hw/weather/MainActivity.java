@@ -9,6 +9,8 @@ import com.hw.weather.fragment.SearchFragment;
 
 public class MainActivity extends AppCompatActivity implements Constants {
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

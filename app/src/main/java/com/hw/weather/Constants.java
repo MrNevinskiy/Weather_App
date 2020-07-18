@@ -20,4 +20,6 @@ public interface Constants {
     String APP_PREFERENCES_WIND_SPEED_INFO = "wind speed info";
     String APP_PREFERENCES_PRESSURE_INFO = "pressure info";
 
+    String saved = "Настройки изменены.";
+    String save = "На главный экран.";
 }

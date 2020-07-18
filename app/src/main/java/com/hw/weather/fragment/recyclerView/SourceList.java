@@ -1,6 +1,8 @@
-package com.hw.weather;
+package com.hw.weather.fragment.recyclerView;
 
 import android.content.res.Resources;
+
+import com.hw.weather.R;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.hw.weather;
+package com.hw.weather.fragment.recyclerView;
 
 
 import android.view.LayoutInflater;
@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.hw.weather.R;
 
 
 public class WeatherList extends RecyclerView.Adapter<WeatherList.ViewHolder> {
