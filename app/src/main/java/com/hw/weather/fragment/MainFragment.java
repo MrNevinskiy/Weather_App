@@ -19,10 +19,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.textview.MaterialTextView;
 import com.hw.weather.Constants;
 import com.hw.weather.MainActivity;
 import com.hw.weather.R;
@@ -70,12 +70,6 @@ public class MainFragment extends Fragment implements Constants {
 
         getPrefSetting();
 
-        ImageButton search = view.findViewById(R.id.searchOnClick);
-        search.setOnClickListener((View view1) -> ((MainActivity) getActivity()).startFragment(3));
-
-        ImageButton setting = view.findViewById(R.id.settingOnClick);
-        setting.setOnClickListener((View view2) -> ((MainActivity) getActivity()).startFragment(2));
-
         ImageButton infoCity = view.findViewById(R.id.infoCity);
         infoCity.setOnClickListener((View view3) -> {
             mSetting = getActivity().getPreferences(Context.MODE_PRIVATE);
@@ -114,14 +108,12 @@ public class MainFragment extends Fragment implements Constants {
             boolean theme = mSetting.getBoolean(APP_PREFERENCES_NIGHT, false);
             if (theme) {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-                //getActivity().setTheme(R.style.AppTheme);
             } else {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-                //getActivity().setTheme(R.style.AppThemeDark);
             }
         }
         if (mSetting.contains(APP_PREFERENCES_CITY)) {
-            TextView textView = (TextView) getActivity().findViewById(R.id.cityFragment);
+            MaterialTextView textView = (MaterialTextView) getActivity().findViewById(R.id.cityFragment);
             textView.setText(mSetting.getString(APP_PREFERENCES_CITY, "City"));
         }
         if (mSetting.contains(APP_PREFERENCES_PRESSURE)) {
@@ -131,19 +123,19 @@ public class MainFragment extends Fragment implements Constants {
             getActivity().findViewById(R.id.windSpeedFragment).setVisibility((mSetting.getBoolean(APP_PREFERENCES_WIND_SPEED, true)) ? View.GONE : View.VISIBLE);
         }
         if (mSetting.contains(APP_PREFERENCES_TEMPERATURE)) {
-            TextView textView = (TextView) getActivity().findViewById(R.id.temperatureFragment);
+            MaterialTextView textView = (MaterialTextView) getActivity().findViewById(R.id.temperatureFragment);
             textView.setText(mSetting.getString(APP_PREFERENCES_TEMPERATURE, "Температура 22°"));
         }
         if (mSetting.contains(APP_PREFERENCES_DATE)) {
-            TextView textView = (TextView) getActivity().findViewById(R.id.dateFragment);
+            MaterialTextView textView = (MaterialTextView) getActivity().findViewById(R.id.dateFragment);
             textView.setText(mSetting.getString(APP_PREFERENCES_DATE, "DATE"));
         }
         if (mSetting.contains(APP_PREFERENCES_PRESSURE_INFO)) {
-            TextView textView = (TextView) getActivity().findViewById(R.id.pressureFragment);
+            MaterialTextView textView = (MaterialTextView) getActivity().findViewById(R.id.pressureFragment);
             textView.setText(mSetting.getString(APP_PREFERENCES_PRESSURE_INFO, "Давление 739.00 мм."));
         }
         if (mSetting.contains(APP_PREFERENCES_WIND_SPEED_INFO)) {
-            TextView textView = (TextView) getActivity().findViewById(R.id.windSpeedFragment);
+            MaterialTextView textView = (MaterialTextView) getActivity().findViewById(R.id.windSpeedFragment);
             textView.setText(mSetting.getString(APP_PREFERENCES_WIND_SPEED_INFO, "Скорость ветра 5 м.с"));
         }
     }

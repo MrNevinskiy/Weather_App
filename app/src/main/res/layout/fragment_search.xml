@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -39,6 +40,16 @@
             app:layout_constraintVertical_bias="0.13"
             app:backgroundTint="#37619F"/>
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/saveButtonSearch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="@string/save"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/searchCityFragment" />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/weatherListSearch"
             android:layout_width="match_parent"
@@ -47,8 +58,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/searchCityFragment"
-            app:layout_constraintVertical_bias="0.06999999" >
+            app:layout_constraintTop_toBottomOf="@+id/saveButtonSearch"
+            app:layout_constraintVertical_bias="0.067">
 
         </androidx.recyclerview.widget.RecyclerView>
 

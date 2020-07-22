@@ -9,16 +9,14 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.Switch;
-import android.widget.TextView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.hw.weather.Constants;
 import com.hw.weather.MainActivity;
 import com.hw.weather.R;
@@ -59,13 +57,13 @@ public class MySettingFragment extends Fragment implements Constants {
 
         getSetting();
 
-        CheckBox pressure = view.findViewById(R.id.pressureFragmentSetting);
+        MaterialCheckBox pressure = view.findViewById(R.id.pressureFragmentSetting);
         pressure.setOnClickListener(view1 -> snackBar(view1, saved, save));
 
-        CheckBox windSpeed = view.findViewById(R.id.windSpeedFragmentSetting);
+        MaterialCheckBox windSpeed = view.findViewById(R.id.windSpeedFragmentSetting);
         windSpeed.setOnClickListener(view12 -> snackBar(view12,saved,save));
 
-        Button buttonSave = view.findViewById(R.id.saveSettingFragment);
+        MaterialButton buttonSave = view.findViewById(R.id.saveSettingFragment);
         buttonSave.setOnClickListener(view13 -> {
             insertSetting();
             ((MainActivity) getActivity()).startFragment(1);
@@ -80,9 +78,9 @@ public class MySettingFragment extends Fragment implements Constants {
     }
 
     public void insertSetting() {
-        boolean checked1 = ((CheckBox) getActivity().findViewById(R.id.pressureFragmentSetting)).isChecked();
-        boolean checked2 = ((CheckBox) getActivity().findViewById(R.id.windSpeedFragmentSetting)).isChecked();
-        boolean checked3 = ((Switch) getActivity().findViewById(R.id.nightActivityFragment)).isChecked();
+        boolean checked1 = ((MaterialCheckBox) getActivity().findViewById(R.id.pressureFragmentSetting)).isChecked();
+        boolean checked2 = ((MaterialCheckBox) getActivity().findViewById(R.id.windSpeedFragmentSetting)).isChecked();
+        boolean checked3 = ((SwitchMaterial) getActivity().findViewById(R.id.nightActivityFragment)).isChecked();
         mSetting = getActivity().getPreferences(Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = mSetting.edit();
         editor.putBoolean(APP_PREFERENCES_PRESSURE, checked1);
@@ -94,15 +92,15 @@ public class MySettingFragment extends Fragment implements Constants {
     public void getSetting() {
         mSetting = getActivity().getPreferences(Context.MODE_PRIVATE);
         if (mSetting.contains(APP_PREFERENCES_PRESSURE)) {
-            CheckBox checkBox = (CheckBox) getActivity().findViewById(R.id.pressureFragmentSetting);
+            MaterialCheckBox checkBox = (MaterialCheckBox) getActivity().findViewById(R.id.pressureFragmentSetting);
             checkBox.setChecked(mSetting.getBoolean(APP_PREFERENCES_PRESSURE, true));
         }
         if (mSetting.contains(APP_PREFERENCES_WIND_SPEED)) {
-            CheckBox checkBox = (CheckBox) getActivity().findViewById(R.id.windSpeedFragmentSetting);
+            MaterialCheckBox checkBox = (MaterialCheckBox) getActivity().findViewById(R.id.windSpeedFragmentSetting);
             checkBox.setChecked(mSetting.getBoolean(APP_PREFERENCES_WIND_SPEED, true));
         }
         if (mSetting.contains(APP_PREFERENCES_NIGHT)) {
-            Switch sw = (Switch) getActivity().findViewById(R.id.nightActivityFragment);
+            SwitchMaterial sw = (SwitchMaterial) getActivity().findViewById(R.id.nightActivityFragment);
             sw.setChecked(mSetting.getBoolean(APP_PREFERENCES_NIGHT, true));
         }
     }
