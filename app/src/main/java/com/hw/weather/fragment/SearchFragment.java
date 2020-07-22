@@ -46,7 +46,6 @@ public class SearchFragment extends Fragment implements Constants {
     private void getWeatherFromServer(View view) {
         TextInputLayout searchCity = (TextInputLayout) getActivity().findViewById(R.id.entryCityFragment);
         String city = searchCity.getEditText().getText().toString();
-
         try {
             String country = "RU";
             String WEATHER_URL = "https://api.openweathermap.org/data/2.5/weather?q=" + city + "," + country +"&appid=" + WEATHER_API_KEY;
@@ -89,14 +88,17 @@ public class SearchFragment extends Fragment implements Constants {
         TextInputLayout searchCity = (TextInputLayout) getActivity().findViewById(R.id.entryCityFragment);
         String city = searchCity.getEditText().getText().toString();
         Double temp = MainWeather.getMain().getTemp() - 273.15;
+        long press = MainWeather.getVisibility().longValue();
+        Double wind = MainWeather.getWind().getSpeed().doubleValue();
+        String up = MainWeather.getTimezone().toString();
         mSetting = getActivity().getPreferences(Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = mSetting.edit();
         editor.putString(APP_PREFERENCES_CITY, city);
         editor.putString(APP_PREFERENCES_TEMPERATURE, String.valueOf(temp));
-        editor.putString(APP_PREFERENCES_DATE, "Сегодня");
-        editor.putString(APP_PREFERENCES_UPDATE, "Сегодня");
-        editor.putString(APP_PREFERENCES_PRESSURE_INFO, "Давление 759.00 мм.");
-        editor.putString(APP_PREFERENCES_WIND_SPEED_INFO, "Скорость ветра 2 м.с");
+        editor.putString(APP_PREFERENCES_DATE, up);
+        editor.putString(APP_PREFERENCES_UPDATE, up);
+        editor.putString(APP_PREFERENCES_PRESSURE_INFO, String.valueOf(press));
+        editor.putString(APP_PREFERENCES_WIND_SPEED_INFO, String.valueOf(wind));
         editor.apply();
         Snackbar.make(getView(), "Update" + String.valueOf(temp), BaseTransientBottomBar.LENGTH_LONG).show();
     }

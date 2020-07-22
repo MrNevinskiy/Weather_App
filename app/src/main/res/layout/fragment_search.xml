@@ -48,7 +48,8 @@
             android:text="@string/save"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/searchCityFragment" />
+            app:layout_constraintTop_toBottomOf="@+id/searchCityFragment"
+            app:backgroundTint="#37619F"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/weatherListSearch"

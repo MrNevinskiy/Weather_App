@@ -22,6 +22,7 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textview.MaterialTextView;
 import com.hw.weather.Constants;
 import com.hw.weather.MainActivity;
@@ -47,6 +48,13 @@ public class MainFragment extends Fragment implements Constants {
                 ((MainActivity) getActivity()).startFragment(3);
                 return true;
 
+            case R.id.icon_about:
+                Snackbar.make(getView(), "Developed by MrAlex / Designed by Dimas_sugih from Freepik", Snackbar.LENGTH_LONG).setAction("Перейти",view -> {
+                    String url = "http://www.freepik.com";
+                    Uri uri = Uri.parse(url);
+                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                    startActivity(intent);
+                }).show();
         }
         return false;
     };
@@ -78,11 +86,6 @@ public class MainFragment extends Fragment implements Constants {
             Uri uri = Uri.parse(url);
             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
             startActivity(intent);
-        });
-
-        ImageButton about = view.findViewById(R.id.icon_about);
-        about.setOnClickListener((View view4) -> {
-            Toast.makeText(getActivity(), "http://www.freepik.com / Designed by Dimas_sugih / Freepik", Toast.LENGTH_LONG).show();
         });
     }
 
