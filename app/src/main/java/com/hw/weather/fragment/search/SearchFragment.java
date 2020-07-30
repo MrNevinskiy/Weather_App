@@ -1,4 +1,4 @@
-package com.hw.weather.fragment;
+package com.hw.weather.fragment.search;
 
 
 import android.content.Context;
@@ -10,13 +10,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
@@ -33,6 +34,8 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -41,6 +44,8 @@ import javax.net.ssl.HttpsURLConnection;
 public class SearchFragment extends Fragment implements Constants {
 
     private SharedPreferences mSetting;
+    private RecyclerView recyclerView;
+    private AdapterSearchHistoric adapterSearchHistoric;
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void getWeatherFromServer(View view) {
@@ -120,6 +125,25 @@ public class SearchFragment extends Fragment implements Constants {
         return false;
     };
 
+    private void init(){
+        recyclerView = (RecyclerView) getActivity().findViewById(R.id.weatherListSearch);
+        recyclerView.setHasFixedSize(true);
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this.getContext());
+        recyclerView.setLayoutManager(layoutManager);
+
+        recyclerView.setLayoutManager(layoutManager);
+        adapterSearchHistoric = new AdapterSearchHistoric(initData(), this.getActivity());
+        recyclerView.setAdapter(adapterSearchHistoric);
+    }
+
+    private List<String> initData() {
+        List<String> list = new ArrayList<>();
+        list.add("Bishkek");
+        list.add("Moscow");
+        return list;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_search, container, false);
@@ -134,6 +158,7 @@ public class SearchFragment extends Fragment implements Constants {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         getSearchSetting();
+        init();
 
         MaterialButton saveCityInfo = view.findViewById(R.id.saveButtonSearch);
         saveCityInfo.setOnClickListener(new View.OnClickListener() {
@@ -147,6 +172,9 @@ public class SearchFragment extends Fragment implements Constants {
 
         MaterialButton checkCity = view.findViewById(R.id.searchCityFragment);
         checkCity.setOnClickListener((View.OnClickListener) (View view1) -> {
+            TextInputLayout searchCity = (TextInputLayout) getActivity().findViewById(R.id.entryCityFragment);
+            String city = searchCity.getEditText().getText().toString();
+            adapterSearchHistoric.addItem(city);
             getWeatherFromServer(view);
         });
     }
