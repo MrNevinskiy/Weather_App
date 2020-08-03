@@ -119,12 +119,15 @@ public class SearchFragment extends Fragment implements Constants {
                 case R.id.navigation_home:
                     MainFragment mainFragment = new MainFragment();
                     ((MainActivity) getActivity()).startFragment(mainFragment);
+                    return true;
                 case R.id.navigation_setting:
                     MySettingFragment mySettingFragment = new MySettingFragment();
                     ((MainActivity) getActivity()).startFragment(mySettingFragment);
+                    return true;
                 case R.id.navigation_search:
                     SearchFragment searchFragment = new SearchFragment();
                     ((MainActivity) getActivity()).startFragment(searchFragment);
+                    return true;
             }
             return false;
         }

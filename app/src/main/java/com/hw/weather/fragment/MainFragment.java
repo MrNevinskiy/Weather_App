@@ -45,12 +45,15 @@ public class MainFragment extends Fragment implements Constants {
                 case R.id.navigation_home:
                     MainFragment mainFragment = new MainFragment();
                     ((MainActivity) getActivity()).startFragment(mainFragment);
+                    return true;
                 case R.id.navigation_setting:
                     MySettingFragment mySettingFragment = new MySettingFragment();
                     ((MainActivity) getActivity()).startFragment(mySettingFragment);
+                    return true;
                 case R.id.navigation_search:
                     SearchFragment searchFragment = new SearchFragment();
                     ((MainActivity) getActivity()).startFragment(searchFragment);
+                    return true;
                 case R.id.icon_about:
                     Snackbar.make(getView(), "Developed by MrAlex / Designed by Dimas_sugih from Freepik", Snackbar.LENGTH_LONG).setAction("Перейти",view -> {
                         String url = "http://www.freepik.com";
@@ -58,6 +61,7 @@ public class MainFragment extends Fragment implements Constants {
                         Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                         startActivity(intent);
                     }).show();
+                    return true;
             }
             return false;
         }
