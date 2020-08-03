@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -28,6 +29,8 @@ import com.google.gson.Gson;
 import com.hw.weather.Constants;
 import com.hw.weather.MainActivity;
 import com.hw.weather.R;
+import com.hw.weather.fragment.MainFragment;
+import com.hw.weather.fragment.MySettingFragment;
 import com.hw.weather.fragment.httpsRequest.MainWeather;
 
 import java.io.BufferedReader;
@@ -109,20 +112,22 @@ public class SearchFragment extends Fragment implements Constants {
     }
 
 
-    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener = item -> {
-        switch (item.getItemId()) {
-            case R.id.navigation_home:
-                ((MainActivity) getActivity()).startFragment(1);
-                return true;
-            case R.id.navigation_setting:
-                ((MainActivity) getActivity()).startFragment(2);
-                return true;
-            case R.id.navigation_search:
-                ((MainActivity) getActivity()).startFragment(3);
-                return true;
-
+    BottomNavigationView.OnNavigationItemSelectedListener selectedListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.navigation_home:
+                    MainFragment mainFragment = new MainFragment();
+                    ((MainActivity) getActivity()).startFragment(mainFragment);
+                case R.id.navigation_setting:
+                    MySettingFragment mySettingFragment = new MySettingFragment();
+                    ((MainActivity) getActivity()).startFragment(mySettingFragment);
+                case R.id.navigation_search:
+                    SearchFragment searchFragment = new SearchFragment();
+                    ((MainActivity) getActivity()).startFragment(searchFragment);
+            }
+            return false;
         }
-        return false;
     };
 
     private void init(){
@@ -149,7 +154,7 @@ public class SearchFragment extends Fragment implements Constants {
         View view = inflater.inflate(R.layout.fragment_search, container, false);
         BottomNavigationView navView = view.findViewById(R.id.nav_view_search);
         navView.getMenu().findItem(R.id.navigation_search).setChecked(true);
-        navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        navView.setOnNavigationItemSelectedListener(selectedListener);
         return view;
     }
 
@@ -165,7 +170,8 @@ public class SearchFragment extends Fragment implements Constants {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Вы выбрали новый город.", Snackbar.LENGTH_LONG).setAction(save, (View.OnClickListener) view2 -> {
-                    ((MainActivity) getActivity()).startFragment(1);
+                    MainFragment mainFragment = new MainFragment();
+                    ((MainActivity) getActivity()).startFragment(mainFragment);
                 }).show();
             }
         });

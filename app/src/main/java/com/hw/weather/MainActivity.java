@@ -5,8 +5,10 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
@@ -38,11 +40,13 @@ import java.util.stream.Collectors;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import static android.view.View.inflate;
+
 
 public class MainActivity extends AppCompatActivity implements Constants {
 
-    private View view;
 
+    private CoordinatorLayout coordinatorLayout;
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void getWeatherFromServer(View view, String city) {
         try {
@@ -111,26 +115,38 @@ public class MainActivity extends AppCompatActivity implements Constants {
 
 
     public boolean onNavigationItemSelected(MenuItem item) {
+
         int id = item.getItemId();
 
         if (id == R.id.nav_home) {
-            startFragment(1);
+            MainFragment mainFragment = new MainFragment();
+            startFragment(mainFragment);
+
         } else if (id == R.id.nav_settings) {
-            startFragment(2);
+            MySettingFragment mySettingFragment = new MySettingFragment();
+            startFragment(mySettingFragment);
+
         } else if (id == R.id.nav_search) {
-            startFragment(3);
+            SearchFragment searchFragment = new SearchFragment();
+            startFragment(searchFragment);
+
         } else if (id == R.id.nav_sensor) {
-            startFragment(4);
+            SensorFragment sensorFragment = new SensorFragment();
+            startFragment(sensorFragment);
+
         } else if (id == R.id.nav_feedback) {
-            Snackbar.make(view,"Feedback",Snackbar.LENGTH_LONG).setAction(" -> ",view -> {
-                    String url = "MrAlex@gmail.com";
+            Snackbar.make(findViewById(R.id.drawer_layout),"Feedback",Snackbar.LENGTH_LONG).setAction(" -> ",view -> {
+                    String url = "https://MrAlex@gmail.com";
                     Uri uri = Uri.parse(url);
                     Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                     startActivity(intent);
             }).show();
+
         } else if (id == R.id.nav_about) {
             Toast.makeText(this,"Developed by MrAlex", Toast.LENGTH_LONG).show();
+
         }
+
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
@@ -147,7 +163,7 @@ public class MainActivity extends AppCompatActivity implements Constants {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public boolean onQueryTextSubmit(String query) {
-                getWeatherFromServer(view, query);
+                getWeatherFromServer(coordinatorLayout, query);
                 Snackbar.make(searchText, query, Snackbar.LENGTH_LONG).show();
                 return true;
             }
@@ -184,28 +200,13 @@ public class MainActivity extends AppCompatActivity implements Constants {
         Toolbar toolbar = initToolbar();
         initToolbar();
         initDrawer(toolbar);
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         MainFragment mainFragment = new MainFragment();
-        ft.replace(R.id.test_replace, mainFragment);
-        ft.commit();
+        startFragment(mainFragment);
     }
 
-    public void startFragment(int item) {
+    public void startFragment(Fragment fragment) {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.addToBackStack("");
-        if (item == 1) {
-            MainFragment mainFragment = new MainFragment();
-            ft.replace(R.id.test_replace, mainFragment);
-        } else if (item == 2) {
-            MySettingFragment mySettingFragment = new MySettingFragment();
-            ft.replace(R.id.test_replace, mySettingFragment);
-        } else if (item == 3) {
-            SearchFragment searchFragment = new SearchFragment();
-            ft.replace(R.id.test_replace, searchFragment);
-        }else if (item == 4) {
-            SensorFragment sensorFragment = new SensorFragment();
-            ft.replace(R.id.test_replace, sensorFragment);
-        }
+        ft.replace(R.id.test_replace, fragment);
         ft.commit();
     }
 }

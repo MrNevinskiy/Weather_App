@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -29,34 +30,37 @@ import com.hw.weather.MainActivity;
 import com.hw.weather.R;
 import com.hw.weather.fragment.recyclerView.SourceList;
 import com.hw.weather.fragment.recyclerView.WeatherList;
+import com.hw.weather.fragment.search.SearchFragment;
 
 import java.util.Objects;
 
 public class MainFragment extends Fragment implements Constants {
 
-    SharedPreferences mSetting;
+    private SharedPreferences mSetting;
 
-    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener = item -> {
-        switch (item.getItemId()) {
-            case R.id.navigation_home:
-                ((MainActivity) getActivity()).startFragment(1);
-                return true;
-            case R.id.navigation_setting:
-                ((MainActivity) getActivity()).startFragment(2);
-                return true;
-            case R.id.navigation_search:
-                ((MainActivity) getActivity()).startFragment(3);
-                return true;
-
-            case R.id.icon_about:
-                Snackbar.make(getView(), "Developed by MrAlex / Designed by Dimas_sugih from Freepik", Snackbar.LENGTH_LONG).setAction("Перейти",view -> {
-                    String url = "http://www.freepik.com";
-                    Uri uri = Uri.parse(url);
-                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                    startActivity(intent);
-                }).show();
+    BottomNavigationView.OnNavigationItemSelectedListener selectedListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.navigation_home:
+                    MainFragment mainFragment = new MainFragment();
+                    ((MainActivity) getActivity()).startFragment(mainFragment);
+                case R.id.navigation_setting:
+                    MySettingFragment mySettingFragment = new MySettingFragment();
+                    ((MainActivity) getActivity()).startFragment(mySettingFragment);
+                case R.id.navigation_search:
+                    SearchFragment searchFragment = new SearchFragment();
+                    ((MainActivity) getActivity()).startFragment(searchFragment);
+                case R.id.icon_about:
+                    Snackbar.make(getView(), "Developed by MrAlex / Designed by Dimas_sugih from Freepik", Snackbar.LENGTH_LONG).setAction("Перейти",view -> {
+                        String url = "http://www.freepik.com";
+                        Uri uri = Uri.parse(url);
+                        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                        startActivity(intent);
+                    }).show();
+            }
+            return false;
         }
-        return false;
     };
 
     @Override
@@ -65,7 +69,7 @@ public class MainFragment extends Fragment implements Constants {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         BottomNavigationView navView = view.findViewById(R.id.nav_view_home);
         navView.getMenu().findItem(R.id.navigation_home).setChecked(true);
-        navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        navView.setOnNavigationItemSelectedListener(selectedListener);
         return view;
     }
 

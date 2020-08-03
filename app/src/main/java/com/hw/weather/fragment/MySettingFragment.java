@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -20,34 +21,37 @@ import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.hw.weather.Constants;
 import com.hw.weather.MainActivity;
 import com.hw.weather.R;
+import com.hw.weather.fragment.search.SearchFragment;
 
 
 public class MySettingFragment extends Fragment implements Constants {
 
     private SharedPreferences mSetting;
 
-    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener = item -> {
-        switch (item.getItemId()) {
-            case R.id.navigation_home:
-                ((MainActivity) getActivity()).startFragment(1);
-                return true;
-            case R.id.navigation_setting:
-                ((MainActivity) getActivity()).startFragment(2);
-                return true;
-            case R.id.navigation_search:
-                ((MainActivity) getActivity()).startFragment(3);
-                return true;
-
-    }
-        return false;
-};
+    BottomNavigationView.OnNavigationItemSelectedListener selectedListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.navigation_home:
+                    MainFragment mainFragment = new MainFragment();
+                    ((MainActivity) getActivity()).startFragment(mainFragment);
+                case R.id.navigation_setting:
+                    MySettingFragment mySettingFragment = new MySettingFragment();
+                    ((MainActivity) getActivity()).startFragment(mySettingFragment);
+                case R.id.navigation_search:
+                    SearchFragment searchFragment = new SearchFragment();
+                    ((MainActivity) getActivity()).startFragment(searchFragment);
+            }
+            return false;
+        }
+    };
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_my_setting, container, false);
         BottomNavigationView navView = view.findViewById(R.id.nav_view);
         navView.getMenu().findItem(R.id.navigation_setting).setChecked(true);
-        navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        navView.setOnNavigationItemSelectedListener(selectedListener);
         return view;
     }
 
@@ -66,14 +70,16 @@ public class MySettingFragment extends Fragment implements Constants {
         MaterialButton buttonSave = view.findViewById(R.id.saveSettingFragment);
         buttonSave.setOnClickListener(view13 -> {
             insertSetting();
-            ((MainActivity) getActivity()).startFragment(1);
+            MainFragment mainFragment = new MainFragment();
+            ((MainActivity) getActivity()).startFragment(mainFragment);;
         });
     }
 
     public void snackBar(View view, String text1, String text2){
         Snackbar.make(view,text1, Snackbar.LENGTH_LONG).setAction(text2, (View.OnClickListener) view1 -> {
             insertSetting();
-            ((MainActivity) getActivity()).startFragment(1);
+            MainFragment mainFragment = new MainFragment();
+            ((MainActivity) getActivity()).startFragment(mainFragment);;
         }).show();
     }
 

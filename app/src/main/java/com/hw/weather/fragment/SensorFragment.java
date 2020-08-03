@@ -5,9 +5,11 @@ import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -15,29 +17,31 @@ import android.widget.TextView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.hw.weather.MainActivity;
 import com.hw.weather.R;
-
+import com.hw.weather.fragment.search.SearchFragment;
 
 
 public class SensorFragment extends Fragment {
 
     private TextView S_ACCELEROMETER, S_TEMPERATURE, S_HUMIDITY, S_GRAVITY;
-
     private SensorManager sensorManager;
 
-    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener = item -> {
-        switch (item.getItemId()) {
-            case R.id.navigation_home:
-                ((MainActivity) getActivity()).startFragment(1);
-                return true;
-            case R.id.navigation_setting:
-                ((MainActivity) getActivity()).startFragment(2);
-                return true;
-            case R.id.navigation_search:
-                ((MainActivity) getActivity()).startFragment(3);
-                return true;
 
+    BottomNavigationView.OnNavigationItemSelectedListener selectedListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.navigation_home:
+                    MainFragment mainFragment = new MainFragment();
+                    ((MainActivity) getActivity()).startFragment(mainFragment);
+                case R.id.navigation_setting:
+                    MySettingFragment mySettingFragment = new MySettingFragment();
+                    ((MainActivity) getActivity()).startFragment(mySettingFragment);
+                case R.id.navigation_search:
+                    SearchFragment searchFragment = new SearchFragment();
+                    ((MainActivity) getActivity()).startFragment(searchFragment);
+            }
+            return false;
         }
-        return false;
     };
 
     @Override
@@ -50,9 +54,9 @@ public class SensorFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_sensor, container, false);
 
-        BottomNavigationView navView = view.findViewById(R.id.nav_view_search);
+        com.google.android.material.bottomnavigation.BottomNavigationView navView = view.findViewById(R.id.nav_view_search);
         navView.getMenu().findItem(R.id.navigation_search).setChecked(true);
-        navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        navView.setOnNavigationItemSelectedListener(selectedListener);
 
         S_ACCELEROMETER = view.findViewById(R.id.S_ACCELEROMETER);
         S_TEMPERATURE = view.findViewById(R.id.S_TEMPERATURE);
@@ -61,26 +65,26 @@ public class SensorFragment extends Fragment {
         return view;
     }
 
-    private void init(){
+    private void init() {
         sensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
 
-        if (sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null){
+        if (sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null) {
             String sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER).toString();
             S_ACCELEROMETER.setText(" S_ACCELEROMETER" + sensor);
         } else {
-            // Failure! No magnetometer.
+            return;
         }
-        if (sensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE) != null){
+        if (sensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE) != null) {
             String sensor = sensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE).toString();
             S_TEMPERATURE.setText("S_TEMPERATURE" + sensor);
         } else {
-            // Failure! No magnetometer.
+            return;
         }
-        if (sensorManager.getDefaultSensor(Sensor.TYPE_RELATIVE_HUMIDITY) != null){
+        if (sensorManager.getDefaultSensor(Sensor.TYPE_RELATIVE_HUMIDITY) != null) {
             String sensor = sensorManager.getDefaultSensor(Sensor.TYPE_RELATIVE_HUMIDITY).toString();
             S_HUMIDITY.setText("S_HUMIDITY " + sensor);
         } else {
-            // Failure! No magnetometer.
+            return;
         }
     }
 
