@@ -19,6 +19,6 @@
     <item
         android:id="@+id/icon_about"
         android:icon="@android:drawable/ic_menu_info_details"
-        android:title="@string/search" />
+        android:title="@string/about" />
 
 </menu>
