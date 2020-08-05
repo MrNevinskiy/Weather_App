@@ -1,7 +1,27 @@
 <resources>
     <string name="app_name">Weather</string>
-    <string name="city">City</string>
     <string name="temperature">Temperature</string>
     <string name="date">Date</string>
-    <string name="update">update</string>
+    <string name="update">Update</string>
+    <string name="night">Night</string>
+    <string name="wind_speed">Wind speed</string>
+    <string name="pressure">Pressure</string>
+    <string name="search">Search</string>
+    <string name="setting">Setting</string>
+    <string name="toMainActivity">To Main Activity</string>
+    <string name="searchCity">Search City</string>
+    <string name="save">Save</string>
+    <string name="wind_speedBox">Hide wind speed</string>
+    <string name="pressureBox">Hide pressure</string>
+    <string name="city">City</string>
+    <string name="info_city" translatable="false">Info city</string>
+    <string name="icon_about" translatable="false">Icon about</string>
+    <string name="cloudy_times" translatable="false" />
+    <string name="home">Home</string>
+
+    <string-array name="date">
+        <item>16.07</item>
+        <item>17.07</item>
+        <item>18.07</item>
+    </string-array>
 </resources>

@@ -1,8 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Погода</string>
-    <string name="city" translatable="false">Город</string>
-    <string name="temperature" translatable="false">Температура</string>
-    <string name="date" translatable="false">Дата</string>
+    <string name="city">Город</string>
+    <string name="temperature">Температура</string>
+    <string name="date">Дата</string>
     <string name="update">Обновлено</string>
+    <string name="night">Ночной режим</string>
+    <string name="wind_speed">Скорость ветра</string>
+    <string name="pressure">Давление</string>
+    <string name="search">Поиск</string>
+    <string name="setting">Настройки</string>
+    <string name="toMainActivity">К главному экрану</string>
+    <string name="searchCity">Поиск города</string>
+    <string name="save">Сохранить</string>
+    <string name="wind_speedBox">Скрыть скорость ветра</string>
+    <string name="pressureBox">Скрыть Давление</string>
+    <string name="home">Главный экран</string>
+
+    <string-array name="date">
+        <item>16.07</item>
+        <item>17.07</item>
+        <item>18.07</item>
+    </string-array>
+
 </resources>
