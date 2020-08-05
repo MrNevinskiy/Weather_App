@@ -11,11 +11,15 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,11 +30,12 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
-import com.hw.weather.fragment.MainFragment;
-import com.hw.weather.fragment.MySettingFragment;
-import com.hw.weather.fragment.SensorFragment;
-import com.hw.weather.fragment.httpsRequest.MainWeather;
+import com.hw.weather.fragment.main.MainFragment;
+import com.hw.weather.fragment.setting.MySettingFragment;
+import com.hw.weather.fragment.sensor.SensorFragment;
+import com.hw.weather.fragment.weatherRequest.MainWeather;
 import com.hw.weather.fragment.search.SearchFragment;
+import com.hw.weather.service.WeatherServiceUpDate;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -40,13 +45,13 @@ import java.util.stream.Collectors;
 
 import javax.net.ssl.HttpsURLConnection;
 
-import static android.view.View.inflate;
-
 
 public class MainActivity extends AppCompatActivity implements Constants {
 
-
+    private MainWeather mainWeather;
+    private WeatherServiceUpDate.ServiceBinder serviceBinder ;
     private CoordinatorLayout coordinatorLayout;
+
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void getWeatherFromServer(View view, String city) {
         try {
@@ -82,7 +87,6 @@ public class MainActivity extends AppCompatActivity implements Constants {
         }
     }
 
-
     @RequiresApi(api = Build.VERSION_CODES.N)
     private String getLines(BufferedReader in) {
         return in.lines().collect(Collectors.joining("\n"));
@@ -112,7 +116,6 @@ public class MainActivity extends AppCompatActivity implements Constants {
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this::onNavigationItemSelected);
     }
-
 
     public boolean onNavigationItemSelected(MenuItem item) {
 
@@ -151,6 +154,41 @@ public class MainActivity extends AppCompatActivity implements Constants {
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    private void initService(){
+        Intent intent = new Intent(this, WeatherServiceUpDate.class);
+        bindService(intent, boundServiceConnection, Context.BIND_AUTO_CREATE);
+
+        new Thread(() -> {
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                Log.e(TAG,"error initService", e);
+                e.printStackTrace();
+            }
+           serviceBinder.getWeatherRequest();
+        }).start();
+    }
+
+    private ServiceConnection boundServiceConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder binder) {
+            serviceBinder = (WeatherServiceUpDate.ServiceBinder) binder;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+        }
+
+        @Override
+        public void onBindingDied(ComponentName name) {
+        }
+
+        @Override
+        public void onNullBinding(ComponentName name) {
+        }
+    };
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -197,11 +235,18 @@ public class MainActivity extends AppCompatActivity implements Constants {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        initService();
         Toolbar toolbar = initToolbar();
         initToolbar();
         initDrawer(toolbar);
         MainFragment mainFragment = new MainFragment();
         startFragment(mainFragment);
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 
     public void startFragment(Fragment fragment) {

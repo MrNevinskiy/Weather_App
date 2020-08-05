@@ -1,5 +1,5 @@
 
-package com.hw.weather.fragment.httpsRequest;
+package com.hw.weather.fragment.weatherRequest;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

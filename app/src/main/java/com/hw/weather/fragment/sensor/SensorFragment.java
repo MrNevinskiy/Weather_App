@@ -1,4 +1,4 @@
-package com.hw.weather.fragment;
+package com.hw.weather.fragment.sensor;
 
 import android.content.Context;
 import android.hardware.Sensor;
@@ -17,7 +17,9 @@ import android.widget.TextView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.hw.weather.MainActivity;
 import com.hw.weather.R;
+import com.hw.weather.fragment.main.MainFragment;
 import com.hw.weather.fragment.search.SearchFragment;
+import com.hw.weather.fragment.setting.MySettingFragment;
 
 
 public class SensorFragment extends Fragment {
@@ -26,7 +28,7 @@ public class SensorFragment extends Fragment {
     private SensorManager sensorManager;
 
 
-    BottomNavigationView.OnNavigationItemSelectedListener selectedListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
+    private BottomNavigationView.OnNavigationItemSelectedListener selectedListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
