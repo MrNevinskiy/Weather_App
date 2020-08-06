@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragment.SearchFragment">
+    tools:context=".fragment.search.SearchFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"
@@ -16,6 +16,7 @@
             android:id="@+id/entryCityFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="100dp"
             app:layout_constraintBottom_toTopOf="@+id/searchCityFragment"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -32,13 +33,14 @@
             android:id="@+id/searchCityFragment"
             android:layout_width="211dp"
             android:layout_height="45dp"
+            android:layout_marginTop="100dp"
             android:text="@string/search"
+            app:backgroundTint="#37619F"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.13"
-            app:backgroundTint="#37619F"/>
+            app:layout_constraintVertical_bias="0.13" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/saveButtonSearch"
@@ -54,13 +56,11 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/weatherListSearch"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="200dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/saveButtonSearch"
-            app:layout_constraintVertical_bias="0.067">
+            app:layout_constraintTop_toBottomOf="@+id/saveButtonSearch">
 
         </androidx.recyclerview.widget.RecyclerView>
 

@@ -24,6 +24,6 @@ public interface Constants {
     String save = "На главный экран.";
 
     String TAG = "WEATHER";
-
     String WEATHER_API_KEY = "28b71e631469b5bf3305c3eb76287b80";
+
 }

@@ -1,4 +1,4 @@
-package com.hw.weather.fragment;
+package com.hw.weather.fragment.search;
 
 
 import android.content.Context;
@@ -10,13 +10,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
@@ -27,12 +29,16 @@ import com.google.gson.Gson;
 import com.hw.weather.Constants;
 import com.hw.weather.MainActivity;
 import com.hw.weather.R;
+import com.hw.weather.fragment.MainFragment;
+import com.hw.weather.fragment.MySettingFragment;
 import com.hw.weather.fragment.httpsRequest.MainWeather;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -41,6 +47,8 @@ import javax.net.ssl.HttpsURLConnection;
 public class SearchFragment extends Fragment implements Constants {
 
     private SharedPreferences mSetting;
+    private RecyclerView recyclerView;
+    private AdapterSearchHistoric adapterSearchHistoric;
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void getWeatherFromServer(View view) {
@@ -104,28 +112,52 @@ public class SearchFragment extends Fragment implements Constants {
     }
 
 
-    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener = item -> {
-        switch (item.getItemId()) {
-            case R.id.navigation_home:
-                ((MainActivity) getActivity()).startFragment(1);
-                return true;
-            case R.id.navigation_setting:
-                ((MainActivity) getActivity()).startFragment(2);
-                return true;
-            case R.id.navigation_search:
-                ((MainActivity) getActivity()).startFragment(3);
-                return true;
-
+    BottomNavigationView.OnNavigationItemSelectedListener selectedListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.navigation_home:
+                    MainFragment mainFragment = new MainFragment();
+                    ((MainActivity) getActivity()).startFragment(mainFragment);
+                    return true;
+                case R.id.navigation_setting:
+                    MySettingFragment mySettingFragment = new MySettingFragment();
+                    ((MainActivity) getActivity()).startFragment(mySettingFragment);
+                    return true;
+                case R.id.navigation_search:
+                    SearchFragment searchFragment = new SearchFragment();
+                    ((MainActivity) getActivity()).startFragment(searchFragment);
+                    return true;
+            }
+            return false;
         }
-        return false;
     };
+
+    private void init(){
+        recyclerView = (RecyclerView) getActivity().findViewById(R.id.weatherListSearch);
+        recyclerView.setHasFixedSize(true);
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this.getContext());
+        recyclerView.setLayoutManager(layoutManager);
+
+        recyclerView.setLayoutManager(layoutManager);
+        adapterSearchHistoric = new AdapterSearchHistoric(initData(), this.getActivity());
+        recyclerView.setAdapter(adapterSearchHistoric);
+    }
+
+    private List<String> initData() {
+        List<String> list = new ArrayList<>();
+        list.add("Bishkek");
+        list.add("Moscow");
+        return list;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_search, container, false);
         BottomNavigationView navView = view.findViewById(R.id.nav_view_search);
         navView.getMenu().findItem(R.id.navigation_search).setChecked(true);
-        navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        navView.setOnNavigationItemSelectedListener(selectedListener);
         return view;
     }
 
@@ -134,19 +166,24 @@ public class SearchFragment extends Fragment implements Constants {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         getSearchSetting();
+        init();
 
         MaterialButton saveCityInfo = view.findViewById(R.id.saveButtonSearch);
         saveCityInfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Вы выбрали новый город.", Snackbar.LENGTH_LONG).setAction(save, (View.OnClickListener) view2 -> {
-                    ((MainActivity) getActivity()).startFragment(1);
+                    MainFragment mainFragment = new MainFragment();
+                    ((MainActivity) getActivity()).startFragment(mainFragment);
                 }).show();
             }
         });
 
         MaterialButton checkCity = view.findViewById(R.id.searchCityFragment);
         checkCity.setOnClickListener((View.OnClickListener) (View view1) -> {
+            TextInputLayout searchCity = (TextInputLayout) getActivity().findViewById(R.id.entryCityFragment);
+            String city = searchCity.getEditText().getText().toString();
+            adapterSearchHistoric.addItem(city);
             getWeatherFromServer(view);
         });
     }
