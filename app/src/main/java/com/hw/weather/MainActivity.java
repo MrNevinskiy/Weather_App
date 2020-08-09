@@ -1,5 +1,6 @@
 package com.hw.weather;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -42,17 +43,13 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.stream.Collectors;
-
 import javax.net.ssl.HttpsURLConnection;
 
 
-public class MainActivity extends AppCompatActivity implements Constants {
+public class MainActivity extends AppCompatActivity implements Constants, SelectedFragment {
 
-    private MainWeather mainWeather;
-    private WeatherServiceUpDate.ServiceBinder serviceBinder ;
     private CoordinatorLayout coordinatorLayout;
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     private void getWeatherFromServer(View view, String city) {
         try {
             String country = "RU";
@@ -71,8 +68,8 @@ public class MainActivity extends AppCompatActivity implements Constants {
                     MainWeather weatherRequest = gson.fromJson(result, MainWeather.class);
                     handler.post(() -> saveSearchSetting(weatherRequest));
                 } catch (Exception e) {
-                    Snackbar.make(view, "Ошибка соединения", BaseTransientBottomBar.LENGTH_SHORT).show();
-                    Log.e(TAG, "Ошибка соединения", e);
+                    Snackbar.make(view, "Error Connection", BaseTransientBottomBar.LENGTH_SHORT).show();
+                    Log.e(TAG, "Error Connection", e);
                     e.printStackTrace();
                 } finally {
                     if (null != urlConnection) {
@@ -81,22 +78,18 @@ public class MainActivity extends AppCompatActivity implements Constants {
                 }
             }).start();
         } catch (MalformedURLException e) {
-            Snackbar.make(view, "Ошибка адресса", BaseTransientBottomBar.LENGTH_SHORT).show();
-            Log.e(TAG, "Ошибка адресса", e);
+            Snackbar.make(view, "Error URL", BaseTransientBottomBar.LENGTH_SHORT).show();
+            Log.e(TAG, "Error URL", e);
             e.printStackTrace();
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     private String getLines(BufferedReader in) {
         return in.lines().collect(Collectors.joining("\n"));
     }
 
     private void saveSearchSetting(MainWeather MainWeather) {
         Double temp = MainWeather.getMain().getTemp() - 273.15;
-        long press = MainWeather.getVisibility().longValue();
-        Double wind = MainWeather.getWind().getSpeed().doubleValue();
-        String up = MainWeather.getTimezone().toString();
         String tempString = temp.toString();
         Toast.makeText(getApplicationContext(), tempString, Toast.LENGTH_LONG).show();
     }
@@ -118,36 +111,30 @@ public class MainActivity extends AppCompatActivity implements Constants {
     }
 
     public boolean onNavigationItemSelected(MenuItem item) {
-
         int id = item.getItemId();
 
         if (id == R.id.nav_home) {
-            MainFragment mainFragment = new MainFragment();
-            startFragment(mainFragment);
+            startFragment(new MainFragment());
 
         } else if (id == R.id.nav_settings) {
-            MySettingFragment mySettingFragment = new MySettingFragment();
-            startFragment(mySettingFragment);
+            startFragment(new MySettingFragment());
 
         } else if (id == R.id.nav_search) {
-            SearchFragment searchFragment = new SearchFragment();
-            startFragment(searchFragment);
+            startFragment(new SearchFragment());
 
         } else if (id == R.id.nav_sensor) {
-            SensorFragment sensorFragment = new SensorFragment();
-            startFragment(sensorFragment);
+            startFragment(new SensorFragment());
 
         } else if (id == R.id.nav_feedback) {
-            Snackbar.make(findViewById(R.id.drawer_layout),"Feedback",Snackbar.LENGTH_LONG).setAction(" -> ",view -> {
-                    String url = "https://MrAlex@gmail.com";
-                    Uri uri = Uri.parse(url);
-                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                    startActivity(intent);
+            Snackbar.make(findViewById(R.id.drawer_layout), "Feedback", Snackbar.LENGTH_LONG).setAction(" -> ", view -> {
+                String url = "https://MrAlex@gmail.com";
+                Uri uri = Uri.parse(url);
+                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                startActivity(intent);
             }).show();
 
         } else if (id == R.id.nav_about) {
-            Toast.makeText(this,"Developed by MrAlex", Toast.LENGTH_LONG).show();
-
+            Toast.makeText(this, "Developed by MrAlex", Toast.LENGTH_LONG).show();
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -155,26 +142,16 @@ public class MainActivity extends AppCompatActivity implements Constants {
         return true;
     }
 
-    private void initService(){
+    private void initService() {
         Intent intent = new Intent(this, WeatherServiceUpDate.class);
         bindService(intent, boundServiceConnection, Context.BIND_AUTO_CREATE);
-
-        new Thread(() -> {
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException e) {
-                Log.e(TAG,"error initService", e);
-                e.printStackTrace();
-            }
-           serviceBinder.getWeatherRequest();
-        }).start();
     }
 
     private ServiceConnection boundServiceConnection = new ServiceConnection() {
 
         @Override
         public void onServiceConnected(ComponentName name, IBinder binder) {
-            serviceBinder = (WeatherServiceUpDate.ServiceBinder) binder;
+            WeatherServiceUpDate.ServiceBinder serviceBinder = (WeatherServiceUpDate.ServiceBinder) binder;
         }
 
         @Override
@@ -239,19 +216,38 @@ public class MainActivity extends AppCompatActivity implements Constants {
         Toolbar toolbar = initToolbar();
         initToolbar();
         initDrawer(toolbar);
-        MainFragment mainFragment = new MainFragment();
-        startFragment(mainFragment);
-
+        startFragment(new MainFragment());
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
-
     public void startFragment(Fragment fragment) {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.test_replace, fragment);
         ft.commit();
     }
+
+    @Override
+    public boolean NavigationItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.navigation_home:
+                startFragment(new MainFragment());
+                return true;
+            case R.id.navigation_setting:
+                startFragment(new MySettingFragment());
+                return true;
+            case R.id.navigation_search:
+                startFragment(new SearchFragment());
+                return true;
+            case R.id.icon_about:
+                Snackbar.make(findViewById(R.id.test_replace), "Developed by MrAlex / Designed by Dimas_sugih from Freepik", Snackbar.LENGTH_LONG).setAction("Перейти",view -> {
+                    String url = "http://www.freepik.com";
+                    Uri uri = Uri.parse(url);
+                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                    startActivity(intent);
+                }).show();
+                return true;
+        }
+        return false;
+    }
+
 }

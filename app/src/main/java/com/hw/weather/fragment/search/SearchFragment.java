@@ -3,12 +3,10 @@ package com.hw.weather.fragment.search;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -27,10 +24,9 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.Gson;
 import com.hw.weather.Constants;
-import com.hw.weather.MainActivity;
 import com.hw.weather.R;
+import com.hw.weather.SelectedFragment;
 import com.hw.weather.fragment.main.MainFragment;
-import com.hw.weather.fragment.setting.MySettingFragment;
 import com.hw.weather.fragment.weatherRequest.MainWeather;
 
 import java.io.BufferedReader;
@@ -47,16 +43,32 @@ import javax.net.ssl.HttpsURLConnection;
 public class SearchFragment extends Fragment implements Constants {
 
     private SharedPreferences mSetting;
-    private RecyclerView recyclerView;
     private AdapterSearchHistoric adapterSearchHistoric;
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_search, container, false);
+        BottomNavigationView navView = view.findViewById(R.id.nav_view_search);
+        navView.getMenu().findItem(R.id.navigation_search).setChecked(true);
+        navView.setOnNavigationItemSelectedListener(selectedListener);
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        getSearchSetting();
+        init();
+        saveCityInfo(view);
+        enterCity(view);
+    }
+
     private void getWeatherFromServer(View view) {
         TextInputLayout searchCity = (TextInputLayout) getActivity().findViewById(R.id.entryCityFragment);
         String city = searchCity.getEditText().getText().toString();
         try {
             String country = "RU";
-            String WEATHER_URL = "https://api.openweathermap.org/data/2.5/weather?q=" + city + "," + country +"&appid=" + WEATHER_API_KEY;
+            String WEATHER_URL = "https://api.openweathermap.org/data/2.5/weather?q=" + city + "," + country + "&appid=" + WEATHER_API_KEY;
             final URL uri = new URL(WEATHER_URL);
             final Handler handler = new Handler();
             new Thread(() -> {
@@ -71,8 +83,8 @@ public class SearchFragment extends Fragment implements Constants {
                     MainWeather weatherRequest = gson.fromJson(result, MainWeather.class);
                     handler.post(() -> saveSearchSetting(weatherRequest));
                 } catch (Exception e) {
-                    Snackbar.make(view, "Ошибка соединения", BaseTransientBottomBar.LENGTH_SHORT).show();
-                    Log.e(TAG, "Ошибка соединения", e);
+                    Snackbar.make(view, "", BaseTransientBottomBar.LENGTH_SHORT).show();
+                    Log.e(TAG, "Error Connection", e);
                     e.printStackTrace();
                 } finally {
                     if (null != urlConnection) {
@@ -81,18 +93,17 @@ public class SearchFragment extends Fragment implements Constants {
                 }
             }).start();
         } catch (MalformedURLException e) {
-            Snackbar.make(view, "Ошибка адресса", BaseTransientBottomBar.LENGTH_SHORT).show();
-            Log.e(TAG, "Ошибка адресса", e);
+            Snackbar.make(view, "Error URL", BaseTransientBottomBar.LENGTH_SHORT).show();
+            Log.e(TAG, "Error URL", e);
             e.printStackTrace();
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     private String getLines(BufferedReader in) {
         return in.lines().collect(Collectors.joining("\n"));
     }
 
-    private void saveSearchSetting(MainWeather MainWeather){
+    private void saveSearchSetting(MainWeather MainWeather) {
         TextInputLayout searchCity = (TextInputLayout) getActivity().findViewById(R.id.entryCityFragment);
         String city = searchCity.getEditText().getText().toString();
         Double temp = MainWeather.getMain().getTemp() - 273.15;
@@ -111,30 +122,13 @@ public class SearchFragment extends Fragment implements Constants {
         Snackbar.make(getView(), "Update" + String.valueOf(temp), BaseTransientBottomBar.LENGTH_LONG).show();
     }
 
-
-    private BottomNavigationView.OnNavigationItemSelectedListener selectedListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.navigation_home:
-                    MainFragment mainFragment = new MainFragment();
-                    ((MainActivity) getActivity()).startFragment(mainFragment);
-                    return true;
-                case R.id.navigation_setting:
-                    MySettingFragment mySettingFragment = new MySettingFragment();
-                    ((MainActivity) getActivity()).startFragment(mySettingFragment);
-                    return true;
-                case R.id.navigation_search:
-                    SearchFragment searchFragment = new SearchFragment();
-                    ((MainActivity) getActivity()).startFragment(searchFragment);
-                    return true;
-            }
-            return false;
-        }
+    private BottomNavigationView.OnNavigationItemSelectedListener selectedListener = item -> {
+        ((SelectedFragment) requireContext()).NavigationItemSelected(item);
+        return false;
     };
 
-    private void init(){
-        recyclerView = (RecyclerView) getActivity().findViewById(R.id.weatherListSearch);
+    private void init() {
+        RecyclerView recyclerView = (RecyclerView) getActivity().findViewById(R.id.weatherListSearch);
         recyclerView.setHasFixedSize(true);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this.getContext());
@@ -152,35 +146,18 @@ public class SearchFragment extends Fragment implements Constants {
         return list;
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_search, container, false);
-        BottomNavigationView navView = view.findViewById(R.id.nav_view_search);
-        navView.getMenu().findItem(R.id.navigation_search).setChecked(true);
-        navView.setOnNavigationItemSelectedListener(selectedListener);
-        return view;
+    private void saveCityInfo(@NonNull View view) {
+        MaterialButton saveCity = view.findViewById(R.id.saveButtonSearch);
+        saveCity.setOnClickListener(view1 ->
+                Snackbar.make(view1, "Вы выбрали новый город.", Snackbar.LENGTH_LONG)
+                        .setAction(save, view2 -> {
+                            ((SelectedFragment) requireContext()).startFragment(new MainFragment());
+                        }).show());
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        getSearchSetting();
-        init();
-
-        MaterialButton saveCityInfo = view.findViewById(R.id.saveButtonSearch);
-        saveCityInfo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Вы выбрали новый город.", Snackbar.LENGTH_LONG).setAction(save, (View.OnClickListener) view2 -> {
-                    MainFragment mainFragment = new MainFragment();
-                    ((MainActivity) getActivity()).startFragment(mainFragment);
-                }).show();
-            }
-        });
-
+    private void enterCity(@NonNull View view) {
         MaterialButton checkCity = view.findViewById(R.id.searchCityFragment);
-        checkCity.setOnClickListener((View.OnClickListener) (View view1) -> {
+        checkCity.setOnClickListener((View view1) -> {
             TextInputLayout searchCity = (TextInputLayout) getActivity().findViewById(R.id.entryCityFragment);
             String city = searchCity.getEditText().getText().toString();
             adapterSearchHistoric.addItem(city);
