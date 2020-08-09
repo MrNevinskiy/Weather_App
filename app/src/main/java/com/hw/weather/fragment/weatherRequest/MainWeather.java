@@ -1,5 +1,5 @@
 
-package com.hw.weather.fragment.httpsRequest;
+package com.hw.weather.fragment.weatherRequest;
 
 import java.util.List;
 import com.google.gson.annotations.Expose;

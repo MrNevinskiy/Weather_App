@@ -1,4 +1,4 @@
-package com.hw.weather.fragment;
+package com.hw.weather.fragment.setting;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -21,6 +21,7 @@ import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.hw.weather.Constants;
 import com.hw.weather.MainActivity;
 import com.hw.weather.R;
+import com.hw.weather.fragment.main.MainFragment;
 import com.hw.weather.fragment.search.SearchFragment;
 
 
@@ -28,7 +29,7 @@ public class MySettingFragment extends Fragment implements Constants {
 
     private SharedPreferences mSetting;
 
-    BottomNavigationView.OnNavigationItemSelectedListener selectedListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
+    private BottomNavigationView.OnNavigationItemSelectedListener selectedListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {

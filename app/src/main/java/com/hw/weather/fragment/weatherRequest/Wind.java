@@ -1,5 +1,5 @@
 
-package com.hw.weather.fragment.httpsRequest;
+package com.hw.weather.fragment.weatherRequest;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -8,12 +8,12 @@ public class Wind {
 
     @SerializedName("speed")
     @Expose
-    private Integer speed;
+    private float speed;
     @SerializedName("deg")
     @Expose
-    private Integer deg;
+    private Float deg;
 
-    public Integer getSpeed() {
+    public Float getSpeed() {
         return speed;
     }
 
@@ -21,11 +21,11 @@ public class Wind {
         this.speed = speed;
     }
 
-    public Integer getDeg() {
+    public Float getDeg() {
         return deg;
     }
 
-    public void setDeg(Integer deg) {
+    public void setDeg(Float deg) {
         this.deg = deg;
     }
 

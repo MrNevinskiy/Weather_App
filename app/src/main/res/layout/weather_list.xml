@@ -14,7 +14,7 @@
         android:layout_height="match_parent">
 
         <ImageView
-            android:id="@+id/imageView"
+            android:id="@+id/weatherIcon"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:contentDescription="@string/cloudy_times"
@@ -59,7 +59,7 @@
             android:layout_marginTop="40dp"
             android:text="@string/wind_speed"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/imageView"
+            app:layout_constraintStart_toEndOf="@+id/weatherIcon"
             app:layout_constraintTop_toBottomOf="@+id/dateR" />
 
         <TextView
@@ -71,7 +71,7 @@
             android:text="@string/date"
             app:layout_constraintEnd_toStartOf="@+id/pressureR"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toEndOf="@+id/imageView"
+            app:layout_constraintStart_toEndOf="@+id/weatherIcon"
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 

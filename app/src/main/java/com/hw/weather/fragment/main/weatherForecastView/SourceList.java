@@ -1,4 +1,4 @@
-package com.hw.weather.fragment.recyclerView;
+package com.hw.weather.fragment.main.weatherForecastView;
 
 import android.content.res.Resources;
 

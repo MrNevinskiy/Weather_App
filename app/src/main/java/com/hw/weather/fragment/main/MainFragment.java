@@ -1,4 +1,4 @@
-package com.hw.weather.fragment;
+package com.hw.weather.fragment.main;
 
 import android.content.Context;
 import android.content.Intent;
@@ -15,12 +15,12 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.snackbar.Snackbar;
@@ -28,17 +28,20 @@ import com.google.android.material.textview.MaterialTextView;
 import com.hw.weather.Constants;
 import com.hw.weather.MainActivity;
 import com.hw.weather.R;
-import com.hw.weather.fragment.recyclerView.SourceList;
-import com.hw.weather.fragment.recyclerView.WeatherList;
+import com.hw.weather.fragment.setting.MySettingFragment;
+import com.hw.weather.fragment.main.weatherForecastView.SourceList;
+import com.hw.weather.fragment.main.weatherForecastView.WeatherList;
 import com.hw.weather.fragment.search.SearchFragment;
+import com.hw.weather.fragment.weatherRequest.MainWeather;
 
 import java.util.Objects;
 
 public class MainFragment extends Fragment implements Constants {
 
     private SharedPreferences mSetting;
+    private MainWeather mainWeather;
 
-    BottomNavigationView.OnNavigationItemSelectedListener selectedListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
+    private BottomNavigationView.OnNavigationItemSelectedListener selectedListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
@@ -150,4 +153,35 @@ public class MainFragment extends Fragment implements Constants {
             textView.setText(mSetting.getString(APP_PREFERENCES_WIND_SPEED_INFO, "Скорость ветра 5 м.с"));
         }
     }
+
+//    public void getPrefSetting2() {
+//
+//           new Thread(() -> {
+//               try {
+//               Thread.sleep(6000);
+//           } catch (InterruptedException e) {
+//               Log.e(TAG,"error initService", e);
+//               e.printStackTrace();
+//           }
+////                   MaterialTextView cityFragment = (MaterialTextView) getActivity().findViewById(R.id.cityFragment);
+////                   cityFragment.setText(mainWeather.getName());
+//
+//
+////                   MaterialTextView temperatureFragment = (MaterialTextView) getActivity().findViewById(R.id.temperatureFragment);
+////                   temperatureFragment.setText(mainWeather.getMain().getTemp().toString());
+//
+//
+////                   MaterialTextView dateFragment = (MaterialTextView) getActivity().findViewById(R.id.dateFragment);
+////                   dateFragment.setText(mainWeather.getTimezone());
+////
+////
+////                   MaterialTextView pressureFragment = (MaterialTextView) getActivity().findViewById(R.id.pressureFragment);
+////                   pressureFragment.setText(mainWeather.getMain().getPressure());
+////
+////
+////                   MaterialTextView windSpeedFragment = (MaterialTextView) getActivity().findViewById(R.id.windSpeedFragment);
+////                   windSpeedFragment.setText(mainWeather.getWind().toString());
+//           }).start();
+   // }
+
 }

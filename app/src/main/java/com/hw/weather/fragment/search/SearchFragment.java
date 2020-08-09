@@ -29,9 +29,9 @@ import com.google.gson.Gson;
 import com.hw.weather.Constants;
 import com.hw.weather.MainActivity;
 import com.hw.weather.R;
-import com.hw.weather.fragment.MainFragment;
-import com.hw.weather.fragment.MySettingFragment;
-import com.hw.weather.fragment.httpsRequest.MainWeather;
+import com.hw.weather.fragment.main.MainFragment;
+import com.hw.weather.fragment.setting.MySettingFragment;
+import com.hw.weather.fragment.weatherRequest.MainWeather;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -112,7 +112,7 @@ public class SearchFragment extends Fragment implements Constants {
     }
 
 
-    BottomNavigationView.OnNavigationItemSelectedListener selectedListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
+    private BottomNavigationView.OnNavigationItemSelectedListener selectedListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
