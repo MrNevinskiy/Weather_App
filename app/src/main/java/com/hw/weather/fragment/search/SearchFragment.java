@@ -87,14 +87,7 @@ public class SearchFragment extends Fragment implements Constants {
                     @Override
                     public void onResponse(Call<MainWeather> call, Response<MainWeather> response) {
                         if(response.body() != null){
-                            String up = Calendar.getInstance().getTime().toString();
-                            Double temp = response.body().getMain().getTemp() + absoluteZero;
-                            WeatherCity newWeatherCity = new WeatherCity();
-                            newWeatherCity.city = country;
-                            newWeatherCity.date = up;
-                            newWeatherCity.temp = temp.toString();
-                            weatherSource.addCity(newWeatherCity);
-                            adapterSearchHistoric.notifyDataSetChanged();
+                            dbInsert(response);
                             saveSearchSetting(response);
                             Snackbar.make(view, cityCountry, BaseTransientBottomBar.LENGTH_SHORT).show();
                         }
@@ -105,6 +98,17 @@ public class SearchFragment extends Fragment implements Constants {
                         Snackbar.make(view, "Error", BaseTransientBottomBar.LENGTH_SHORT).show();
                     }
                 });
+    }
+
+    private void dbInsert(Response<MainWeather> response) {
+        String up = Calendar.getInstance().getTime().toString();
+        Double temp = response.body().getMain().getTemp() + absoluteZero;
+        WeatherCity newWeatherCity = new WeatherCity();
+        newWeatherCity.city = country;
+        newWeatherCity.date = up;
+        newWeatherCity.temp = temp.toString();
+        weatherSource.addCity(newWeatherCity);
+        adapterSearchHistoric.notifyDataSetChanged();
     }
 
     private void saveSearchSetting(Response<MainWeather> response) {
