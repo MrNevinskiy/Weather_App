@@ -28,7 +28,8 @@ import com.google.android.material.textview.MaterialTextView;
 import com.hw.weather.Constants;
 import com.hw.weather.OpenWeather;
 import com.hw.weather.R;
-import com.hw.weather.SelectedFragment;
+import com.hw.weather.SupportItemSelect;
+import com.hw.weather.databinding.FragmentMainBinding;
 import com.hw.weather.fragment.main.weatherForecastView.SourceList;
 import com.hw.weather.fragment.main.weatherForecastView.WeatherList;
 import com.hw.weather.fragment.weatherRequest.MainWeather;
@@ -49,6 +50,7 @@ public class MainFragment extends Fragment implements Constants {
     private ImageView weatherIcon;
     private MaterialTextView temperatureFragment;
     private MaterialTextView cityFragment;
+//    private FragmentMainBinding binding;
 
     private void initRetrofit(){
         Retrofit retrofit;
@@ -94,6 +96,8 @@ public class MainFragment extends Fragment implements Constants {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
+//        binding = FragmentMainBinding.inflate(inflater, container, false);
+//        View view = binding.getRoot();
         BottomNavigationView navView = view.findViewById(R.id.nav_view_home);
         navView.getMenu().findItem(R.id.navigation_home).setChecked(true);
         navView.setOnNavigationItemSelectedListener(selectedListener);
@@ -101,7 +105,7 @@ public class MainFragment extends Fragment implements Constants {
         temperatureFragment = view.findViewById(R.id.temperatureFragment);
         cityFragment = view.findViewById(R.id.cityFragment);
         initRetrofit();
-        requestRetrofit("Moscow,RU", WEATHER_API_KEY, view);
+//        requestRetrofit("Moscow,RU", WEATHER_API_KEY, view);
         return view;
     }
 
@@ -115,14 +119,14 @@ public class MainFragment extends Fragment implements Constants {
     }
 
     private BottomNavigationView.OnNavigationItemSelectedListener selectedListener = item -> {
-        ((SelectedFragment) requireContext()).NavigationItemSelected(item);
+        ((SupportItemSelect) requireContext()).NavigationItemSelected(item);
         return false;
     };
 
     private void checkCity(@NonNull View view) {
         ImageButton infoCity = view.findViewById(R.id.infoCity);
         infoCity.setOnClickListener((View view3) -> {
-            mSetting = getActivity().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
+            mSetting = requireContext().getSharedPreferences(APP_PREFERENCES,Context.MODE_PRIVATE);
             String city = (Objects.requireNonNull(mSetting.getString(APP_PREFERENCES_CITY, "City")));
             String url = "https://www.google.ru/search?newwindow=1&q=" + city;
             Uri uri = Uri.parse(url);
@@ -132,7 +136,7 @@ public class MainFragment extends Fragment implements Constants {
     }
 
     public void getCityList(SourceList sourceList, View view) {
-        RecyclerView recyclerView = getActivity().findViewById(R.id.weatherListMain);
+        RecyclerView recyclerView = getView().findViewById(R.id.weatherListMain);
         recyclerView.setHasFixedSize(true);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this.getContext());
@@ -148,7 +152,7 @@ public class MainFragment extends Fragment implements Constants {
     }
 
     public void getPrefSetting() {
-        mSetting = getActivity().getPreferences(Context.MODE_PRIVATE);
+        mSetting = requireContext().getSharedPreferences(APP_PREFERENCES,Context.MODE_PRIVATE);
         if (mSetting.contains(APP_PREFERENCES_NIGHT)) {
             boolean theme = mSetting.getBoolean(APP_PREFERENCES_NIGHT, false);
             if (theme) {
@@ -158,29 +162,29 @@ public class MainFragment extends Fragment implements Constants {
             }
         }
         if (mSetting.contains(APP_PREFERENCES_CITY)) {
-            MaterialTextView textView = (MaterialTextView) getActivity().findViewById(R.id.cityFragment);
+            MaterialTextView textView = (MaterialTextView) getView().findViewById(R.id.cityFragment);
             textView.setText(mSetting.getString(APP_PREFERENCES_CITY, "City"));
         }
         if (mSetting.contains(APP_PREFERENCES_PRESSURE)) {
-            getActivity().findViewById(R.id.pressureFragment).setVisibility((mSetting.getBoolean(APP_PREFERENCES_PRESSURE, true)) ? View.GONE : View.VISIBLE);
+            getView().findViewById(R.id.pressureFragment).setVisibility((mSetting.getBoolean(APP_PREFERENCES_PRESSURE, true)) ? View.GONE : View.VISIBLE);
         }
         if (mSetting.contains(APP_PREFERENCES_WIND_SPEED)) {
-            getActivity().findViewById(R.id.windSpeedFragment).setVisibility((mSetting.getBoolean(APP_PREFERENCES_WIND_SPEED, true)) ? View.GONE : View.VISIBLE);
+            getView().findViewById(R.id.windSpeedFragment).setVisibility((mSetting.getBoolean(APP_PREFERENCES_WIND_SPEED, true)) ? View.GONE : View.VISIBLE);
         }
         if (mSetting.contains(APP_PREFERENCES_TEMPERATURE)) {
-            MaterialTextView textView = (MaterialTextView) getActivity().findViewById(R.id.temperatureFragment);
+            MaterialTextView textView = (MaterialTextView) getView().findViewById(R.id.temperatureFragment);
             textView.setText(mSetting.getString(APP_PREFERENCES_TEMPERATURE, "Температура 22°"));
         }
         if (mSetting.contains(APP_PREFERENCES_DATE)) {
-            MaterialTextView textView = (MaterialTextView) getActivity().findViewById(R.id.dateFragment);
+            MaterialTextView textView = (MaterialTextView) getView().findViewById(R.id.dateFragment);
             textView.setText(mSetting.getString(APP_PREFERENCES_DATE, "DATE"));
         }
         if (mSetting.contains(APP_PREFERENCES_PRESSURE_INFO)) {
-            MaterialTextView textView = (MaterialTextView) getActivity().findViewById(R.id.pressureFragment);
+            MaterialTextView textView = (MaterialTextView) getView().findViewById(R.id.pressureFragment);
             textView.setText(mSetting.getString(APP_PREFERENCES_PRESSURE_INFO, "Давление 739.00 мм."));
         }
         if (mSetting.contains(APP_PREFERENCES_WIND_SPEED_INFO)) {
-            MaterialTextView textView = (MaterialTextView) getActivity().findViewById(R.id.windSpeedFragment);
+            MaterialTextView textView = (MaterialTextView) getView().findViewById(R.id.windSpeedFragment);
             textView.setText(mSetting.getString(APP_PREFERENCES_WIND_SPEED_INFO, "Скорость ветра 5 м.с"));
         }
     }
