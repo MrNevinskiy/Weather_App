@@ -15,83 +15,114 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textview.MaterialTextView;
 import com.hw.weather.Constants;
-import com.hw.weather.MainActivity;
+import com.hw.weather.OpenWeather;
 import com.hw.weather.R;
-import com.hw.weather.fragment.setting.MySettingFragment;
+import com.hw.weather.SelectedFragment;
 import com.hw.weather.fragment.main.weatherForecastView.SourceList;
 import com.hw.weather.fragment.main.weatherForecastView.WeatherList;
-import com.hw.weather.fragment.search.SearchFragment;
 import com.hw.weather.fragment.weatherRequest.MainWeather;
+import com.squareup.picasso.Picasso;
 
 import java.util.Objects;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainFragment extends Fragment implements Constants {
 
     private SharedPreferences mSetting;
-    private MainWeather mainWeather;
+    private OpenWeather openWeather;
+    private ImageView weatherIcon;
+    private MaterialTextView temperatureFragment;
+    private MaterialTextView cityFragment;
 
-    private BottomNavigationView.OnNavigationItemSelectedListener selectedListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.navigation_home:
-                    MainFragment mainFragment = new MainFragment();
-                    ((MainActivity) getActivity()).startFragment(mainFragment);
-                    return true;
-                case R.id.navigation_setting:
-                    MySettingFragment mySettingFragment = new MySettingFragment();
-                    ((MainActivity) getActivity()).startFragment(mySettingFragment);
-                    return true;
-                case R.id.navigation_search:
-                    SearchFragment searchFragment = new SearchFragment();
-                    ((MainActivity) getActivity()).startFragment(searchFragment);
-                    return true;
-                case R.id.icon_about:
-                    Snackbar.make(getView(), "Developed by MrAlex / Designed by Dimas_sugih from Freepik", Snackbar.LENGTH_LONG).setAction("Перейти",view -> {
-                        String url = "http://www.freepik.com";
-                        Uri uri = Uri.parse(url);
-                        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                        startActivity(intent);
-                    }).show();
-                    return true;
-            }
-            return false;
-        }
-    };
+    private void initRetrofit(){
+        Retrofit retrofit;
+        retrofit = new Retrofit.Builder()
+                .baseUrl("https://api.openweathermap.org/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        openWeather = retrofit.create(OpenWeather.class);
+    }
+
+    private void requestRetrofit(String cityCountry, String keyApi, View view){
+        openWeather.loadWeather(cityCountry, keyApi)
+                .enqueue(new Callback<MainWeather>() {
+                    @Override
+                    public void onResponse(Call<MainWeather> call, Response<MainWeather> response) {
+                        if(response.body() != null){
+                            CurrentWeatherIcon(response);
+                            Double temp = response.body().getMain().getTemp() + absoluteZero;
+                            temperatureFragment.setText(String.format("%+.0f", temp));
+                            cityFragment.setText("Moscow");
+                            Snackbar.make(view, "up", BaseTransientBottomBar.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<MainWeather> call, Throwable t) {
+                        Snackbar.make(view, "Error", BaseTransientBottomBar.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void CurrentWeatherIcon(Response<MainWeather> response) {
+        Picasso.get()
+                .load("https://i.ibb.co/0D17WKS/night-fog.png")
+                .into(weatherIcon);
+    }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         BottomNavigationView navView = view.findViewById(R.id.nav_view_home);
         navView.getMenu().findItem(R.id.navigation_home).setChecked(true);
         navView.setOnNavigationItemSelectedListener(selectedListener);
+        weatherIcon = view.findViewById(R.id.weatherIcon);
+        temperatureFragment = view.findViewById(R.id.temperatureFragment);
+        cityFragment = view.findViewById(R.id.cityFragment);
+        initRetrofit();
+        requestRetrofit("Moscow,RU", WEATHER_API_KEY, view);
         return view;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         SourceList weatherList = new SourceList(getResources());
         getCityList(weatherList.build(), view);
-
+        checkCity(view);
         getPrefSetting();
+    }
 
+    private BottomNavigationView.OnNavigationItemSelectedListener selectedListener = item -> {
+        ((SelectedFragment) requireContext()).NavigationItemSelected(item);
+        return false;
+    };
+
+    private void checkCity(@NonNull View view) {
         ImageButton infoCity = view.findViewById(R.id.infoCity);
         infoCity.setOnClickListener((View view3) -> {
-            mSetting = getActivity().getPreferences(Context.MODE_PRIVATE);
+            mSetting = getActivity().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
             String city = (Objects.requireNonNull(mSetting.getString(APP_PREFERENCES_CITY, "City")));
             String url = "https://www.google.ru/search?newwindow=1&q=" + city;
             Uri uri = Uri.parse(url);
@@ -153,35 +184,4 @@ public class MainFragment extends Fragment implements Constants {
             textView.setText(mSetting.getString(APP_PREFERENCES_WIND_SPEED_INFO, "Скорость ветра 5 м.с"));
         }
     }
-
-//    public void getPrefSetting2() {
-//
-//           new Thread(() -> {
-//               try {
-//               Thread.sleep(6000);
-//           } catch (InterruptedException e) {
-//               Log.e(TAG,"error initService", e);
-//               e.printStackTrace();
-//           }
-////                   MaterialTextView cityFragment = (MaterialTextView) getActivity().findViewById(R.id.cityFragment);
-////                   cityFragment.setText(mainWeather.getName());
-//
-//
-////                   MaterialTextView temperatureFragment = (MaterialTextView) getActivity().findViewById(R.id.temperatureFragment);
-////                   temperatureFragment.setText(mainWeather.getMain().getTemp().toString());
-//
-//
-////                   MaterialTextView dateFragment = (MaterialTextView) getActivity().findViewById(R.id.dateFragment);
-////                   dateFragment.setText(mainWeather.getTimezone());
-////
-////
-////                   MaterialTextView pressureFragment = (MaterialTextView) getActivity().findViewById(R.id.pressureFragment);
-////                   pressureFragment.setText(mainWeather.getMain().getPressure());
-////
-////
-////                   MaterialTextView windSpeedFragment = (MaterialTextView) getActivity().findViewById(R.id.windSpeedFragment);
-////                   windSpeedFragment.setText(mainWeather.getWind().toString());
-//           }).start();
-   // }
-
 }

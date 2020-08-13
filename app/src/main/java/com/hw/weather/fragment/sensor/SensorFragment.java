@@ -15,36 +15,23 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.hw.weather.MainActivity;
 import com.hw.weather.R;
-import com.hw.weather.fragment.main.MainFragment;
-import com.hw.weather.fragment.search.SearchFragment;
-import com.hw.weather.fragment.setting.MySettingFragment;
+import com.hw.weather.SelectedFragment;
 
 
 public class SensorFragment extends Fragment {
 
-    private TextView S_ACCELEROMETER, S_TEMPERATURE, S_HUMIDITY, S_GRAVITY;
+    private TextView S_ACCELEROMETER;
+    private TextView S_TEMPERATURE;
+    private TextView S_GRAVITY;
+    private TextView S_HUMIDITY;
     private SensorManager sensorManager;
 
 
     private BottomNavigationView.OnNavigationItemSelectedListener selectedListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.navigation_home:
-                    MainFragment mainFragment = new MainFragment();
-                    ((MainActivity) getActivity()).startFragment(mainFragment);
-                    return true;
-                case R.id.navigation_setting:
-                    MySettingFragment mySettingFragment = new MySettingFragment();
-                    ((MainActivity) getActivity()).startFragment(mySettingFragment);
-                    return true;
-                case R.id.navigation_search:
-                    SearchFragment searchFragment = new SearchFragment();
-                    ((MainActivity) getActivity()).startFragment(searchFragment);
-                    return true;
-            }
+            ((SelectedFragment) requireContext()).NavigationItemSelected(item);
             return false;
         }
     };
