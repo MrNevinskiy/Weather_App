@@ -121,7 +121,7 @@
             android:id="@+id/infoCity"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:layout_marginTop="212dp"
+            android:layout_marginTop="20dp"
             android:contentDescription="@string/info_city"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.956"
