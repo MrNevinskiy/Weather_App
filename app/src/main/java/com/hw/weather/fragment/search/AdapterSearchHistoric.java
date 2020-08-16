@@ -1,27 +1,30 @@
 package com.hw.weather.fragment.search;
 
-import android.app.Activity;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.textview.MaterialTextView;
 import com.hw.weather.R;
+import com.hw.weather.room.WeatherCity;
+import com.hw.weather.room.WeatherSource;
 
 import java.util.List;
 
-public class AdapterSearchHistoric extends RecyclerView.Adapter<ViewHolder> {
+public class AdapterSearchHistoric extends RecyclerView.Adapter<AdapterSearchHistoric.ViewHolder> {
 
-    private List<String> cityArr;
-    private Activity activity;
-    private int menuPosition;
+    private WeatherSource weatherSource;
+    private Fragment fragment;
+    private long menuPosition;
 
-    public AdapterSearchHistoric(List<String> cityArr, Activity activity) {
-        this.cityArr = cityArr;
-        this.activity = activity;
+    public AdapterSearchHistoric(WeatherSource weatherSource, Fragment fragment) {
+        this.weatherSource = weatherSource;
+        this.fragment = fragment;
     }
 
     @NonNull
@@ -34,45 +37,36 @@ public class AdapterSearchHistoric extends RecyclerView.Adapter<ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        List<WeatherCity> weatherCities = weatherSource.getCities();
+        WeatherCity weatherCity = weatherCities.get(position);
+        holder.city.setText(weatherCity.city);
+        holder.date.setText(weatherCity.date);
+        holder.temp.setText(weatherCity.temp);
 
-        MaterialTextView materialTextView = holder.getMaterialTextView();
-        materialTextView.setText(cityArr.get(position));
-
-        materialTextView.setOnLongClickListener((view -> {
-            menuPosition = position;
-            return false;
-        }));
-
-        activity.registerForContextMenu(materialTextView);
+        holder.cardView.setOnClickListener(view -> {
+            weatherSource.removeCity(weatherCity);
+            notifyDataSetChanged();
+        });
     }
 
     @Override
     public int getItemCount() {
-        return cityArr == null ? 0 : cityArr.size();
+        return weatherSource == null ? 0 : (int) weatherSource.getCountCity();
     }
 
-    public void addItem(String element){
-        cityArr.add(element);
-        notifyItemInserted(cityArr.size()-1);
-    }
+    public class ViewHolder extends RecyclerView.ViewHolder {
 
-    void updateItem(String element, int position){
-        cityArr.set(position, element);
-        notifyItemChanged(position);
-    }
+        private TextView city;
+        private TextView date;
+        private TextView temp;
+        private View cardView;
 
-    void removeItem(int position){
-        cityArr.remove(position);
-        notifyItemRemoved(position);
+        public ViewHolder(@NonNull View itemView) {
+            super(itemView);
+            cardView = itemView;
+            city = cardView.findViewById(R.id.history_city);
+            date = cardView.findViewById(R.id.history_date);
+            temp = cardView.findViewById(R.id.history_temperature);
+        }
     }
-
-    public void clearItems(){
-        cityArr.clear();
-        notifyDataSetChanged();
-    }
-
-    public int getMenuPosition() {
-        return menuPosition;
-    }
-
 }

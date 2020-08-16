@@ -11,8 +11,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.os.Handler;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,35 +20,46 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.gson.Gson;
 import com.hw.weather.Constants;
+import com.hw.weather.OpenWeather;
 import com.hw.weather.R;
-import com.hw.weather.SelectedFragment;
+import com.hw.weather.SupportItemSelect;
 import com.hw.weather.fragment.main.MainFragment;
 import com.hw.weather.fragment.weatherRequest.MainWeather;
+import com.hw.weather.room.App;
+import com.hw.weather.room.WeatherCity;
+import com.hw.weather.room.WeatherDao;
+import com.hw.weather.room.WeatherSource;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import javax.net.ssl.HttpsURLConnection;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class SearchFragment extends Fragment implements Constants {
 
     private SharedPreferences mSetting;
     private AdapterSearchHistoric adapterSearchHistoric;
+    private OpenWeather openWeather;
+    private WeatherSource weatherSource;
+//    private FragmentMainBinding binding;
+    String country;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_search, container, false);
+//        binding = FragmentMainBinding.inflate(inflater, container, false);
+//        View view = binding.getRoot();
         BottomNavigationView navView = view.findViewById(R.id.nav_view_search);
         navView.getMenu().findItem(R.id.navigation_search).setChecked(true);
         navView.setOnNavigationItemSelectedListener(selectedListener);
+        initRetrofit();
         return view;
     }
 
@@ -63,56 +72,53 @@ public class SearchFragment extends Fragment implements Constants {
         enterCity(view);
     }
 
-    private void getWeatherFromServer(View view) {
-        TextInputLayout searchCity = (TextInputLayout) getActivity().findViewById(R.id.entryCityFragment);
-        String city = searchCity.getEditText().getText().toString();
-        try {
-            String country = "RU";
-            String WEATHER_URL = "https://api.openweathermap.org/data/2.5/weather?q=" + city + "," + country + "&appid=" + WEATHER_API_KEY;
-            final URL uri = new URL(WEATHER_URL);
-            final Handler handler = new Handler();
-            new Thread(() -> {
-                HttpsURLConnection urlConnection = null;
-                try {
-                    urlConnection = (HttpsURLConnection) uri.openConnection();
-                    urlConnection.setRequestMethod("GET");
-                    urlConnection.setReadTimeout(10000);
-                    BufferedReader in = new BufferedReader(new InputStreamReader(urlConnection.getInputStream())); // читаем  данные в поток
-                    String result = getLines(in);
-                    Gson gson = new Gson();
-                    MainWeather weatherRequest = gson.fromJson(result, MainWeather.class);
-                    handler.post(() -> saveSearchSetting(weatherRequest));
-                } catch (Exception e) {
-                    Snackbar.make(view, "", BaseTransientBottomBar.LENGTH_SHORT).show();
-                    Log.e(TAG, "Error Connection", e);
-                    e.printStackTrace();
-                } finally {
-                    if (null != urlConnection) {
-                        urlConnection.disconnect();
+    private void initRetrofit(){
+        Retrofit retrofit;
+        retrofit = new Retrofit.Builder()
+                .baseUrl("https://api.openweathermap.org/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        openWeather = retrofit.create(OpenWeather.class);
+    }
+
+    private void requestRetrofit(String cityCountry, String keyApi, View view){
+        openWeather.loadWeather(cityCountry, keyApi)
+                .enqueue(new Callback<MainWeather>() {
+                    @Override
+                    public void onResponse(Call<MainWeather> call, Response<MainWeather> response) {
+                        if(response.body() != null){
+                            dbInsert(response);
+                            saveSearchSetting(response);
+                            Snackbar.make(view, cityCountry, BaseTransientBottomBar.LENGTH_SHORT).show();
+                        }
                     }
-                }
-            }).start();
-        } catch (MalformedURLException e) {
-            Snackbar.make(view, "Error URL", BaseTransientBottomBar.LENGTH_SHORT).show();
-            Log.e(TAG, "Error URL", e);
-            e.printStackTrace();
-        }
+
+                    @Override
+                    public void onFailure(Call<MainWeather> call, Throwable t) {
+                        Snackbar.make(view, "Error", BaseTransientBottomBar.LENGTH_SHORT).show();
+                    }
+                });
     }
 
-    private String getLines(BufferedReader in) {
-        return in.lines().collect(Collectors.joining("\n"));
+    private void dbInsert(Response<MainWeather> response) {
+        String up = Calendar.getInstance().getTime().toString();
+        Double temp = response.body().getMain().getTemp() + absoluteZero;
+        WeatherCity newWeatherCity = new WeatherCity();
+        newWeatherCity.city = country;
+        newWeatherCity.date = up;
+        newWeatherCity.temp = temp.toString();
+        weatherSource.addCity(newWeatherCity);
+        adapterSearchHistoric.notifyDataSetChanged();
     }
 
-    private void saveSearchSetting(MainWeather MainWeather) {
-        TextInputLayout searchCity = (TextInputLayout) getActivity().findViewById(R.id.entryCityFragment);
-        String city = searchCity.getEditText().getText().toString();
-        Double temp = MainWeather.getMain().getTemp() - 273.15;
-        long press = MainWeather.getVisibility().longValue();
-        Double wind = MainWeather.getWind().getSpeed().doubleValue();
-        String up = MainWeather.getTimezone().toString();
-        mSetting = getActivity().getPreferences(Context.MODE_PRIVATE);
+    private void saveSearchSetting(Response<MainWeather> response) {
+        Double temp = response.body().getMain().getTemp() + absoluteZero;
+        long press = response.body().getVisibility().longValue();
+        Double wind = response.body().getWind().getSpeed().doubleValue();
+        String up = response.body().getTimezone().toString();
+        mSetting = requireContext().getSharedPreferences(APP_PREFERENCES,Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = mSetting.edit();
-        editor.putString(APP_PREFERENCES_CITY, city);
+        editor.putString(APP_PREFERENCES_CITY, country);
         editor.putString(APP_PREFERENCES_TEMPERATURE, String.valueOf(temp));
         editor.putString(APP_PREFERENCES_DATE, up);
         editor.putString(APP_PREFERENCES_UPDATE, up);
@@ -123,19 +129,21 @@ public class SearchFragment extends Fragment implements Constants {
     }
 
     private BottomNavigationView.OnNavigationItemSelectedListener selectedListener = item -> {
-        ((SelectedFragment) requireContext()).NavigationItemSelected(item);
+        ((SupportItemSelect) requireContext()).NavigationItemSelected(item);
         return false;
     };
 
     private void init() {
-        RecyclerView recyclerView = (RecyclerView) getActivity().findViewById(R.id.weatherListSearch);
+        RecyclerView recyclerView = (RecyclerView) getView().findViewById(R.id.weatherListSearch);
         recyclerView.setHasFixedSize(true);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this.getContext());
         recyclerView.setLayoutManager(layoutManager);
 
-        recyclerView.setLayoutManager(layoutManager);
-        adapterSearchHistoric = new AdapterSearchHistoric(initData(), this.getActivity());
+        WeatherDao weatherDao = App.getInstance().getWeatherDao();
+        weatherSource = new WeatherSource(weatherDao);
+
+        adapterSearchHistoric = new AdapterSearchHistoric(weatherSource,this);
         recyclerView.setAdapter(adapterSearchHistoric);
     }
 
@@ -151,24 +159,23 @@ public class SearchFragment extends Fragment implements Constants {
         saveCity.setOnClickListener(view1 ->
                 Snackbar.make(view1, "Вы выбрали новый город.", Snackbar.LENGTH_LONG)
                         .setAction(save, view2 -> {
-                            ((SelectedFragment) requireContext()).startFragment(new MainFragment());
+                            ((SupportItemSelect) requireContext()).startFragment(new MainFragment());
                         }).show());
     }
 
     private void enterCity(@NonNull View view) {
         MaterialButton checkCity = view.findViewById(R.id.searchCityFragment);
         checkCity.setOnClickListener((View view1) -> {
-            TextInputLayout searchCity = (TextInputLayout) getActivity().findViewById(R.id.entryCityFragment);
-            String city = searchCity.getEditText().getText().toString();
-            adapterSearchHistoric.addItem(city);
-            getWeatherFromServer(view);
+            TextInputLayout searchCity = (TextInputLayout) view.findViewById(R.id.entryCityFragment);
+            country = searchCity.getEditText().getText().toString();
+            requestRetrofit(country,WEATHER_API_KEY,view);
         });
     }
 
     public void getSearchSetting() {
-        mSetting = getActivity().getPreferences(Context.MODE_PRIVATE);
+        mSetting = requireContext().getSharedPreferences(APP_PREFERENCES,Context.MODE_PRIVATE);
         if (mSetting.contains(APP_PREFERENCES_CITY)) {
-            TextInputLayout searchCity = (TextInputLayout) getActivity().findViewById(R.id.entryCityFragment);
+            TextInputLayout searchCity = (TextInputLayout) getView().findViewById(R.id.entryCityFragment);
             searchCity.getEditText().setText(mSetting.getString(APP_PREFERENCES_CITY, " "));
         }
     }

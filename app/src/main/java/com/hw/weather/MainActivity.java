@@ -1,7 +1,6 @@
 package com.hw.weather;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
@@ -17,20 +16,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.gson.Gson;
 import com.hw.weather.fragment.main.MainFragment;
 import com.hw.weather.fragment.setting.MySettingFragment;
 import com.hw.weather.fragment.sensor.SensorFragment;
@@ -38,60 +31,44 @@ import com.hw.weather.fragment.weatherRequest.MainWeather;
 import com.hw.weather.fragment.search.SearchFragment;
 import com.hw.weather.service.WeatherServiceUpDate;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.stream.Collectors;
-import javax.net.ssl.HttpsURLConnection;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 
-public class MainActivity extends AppCompatActivity implements Constants, SelectedFragment {
+public class MainActivity extends AppCompatActivity implements Constants, SupportItemSelect {
 
     private CoordinatorLayout coordinatorLayout;
+    private OpenWeather openWeather;
+    private String text;
 
-    private void getWeatherFromServer(View view, String city) {
-        try {
-            String country = "RU";
-            String WEATHER_URL = "https://api.openweathermap.org/data/2.5/weather?q=" + city + "," + country + "&appid=" + WEATHER_API_KEY;
-            final URL uri = new URL(WEATHER_URL);
-            final Handler handler = new Handler();
-            new Thread(() -> {
-                HttpsURLConnection urlConnection = null;
-                try {
-                    urlConnection = (HttpsURLConnection) uri.openConnection();
-                    urlConnection.setRequestMethod("GET");
-                    urlConnection.setReadTimeout(10000);
-                    BufferedReader in = new BufferedReader(new InputStreamReader(urlConnection.getInputStream())); // читаем  данные в поток
-                    String result = getLines(in);
-                    Gson gson = new Gson();
-                    MainWeather weatherRequest = gson.fromJson(result, MainWeather.class);
-                    handler.post(() -> saveSearchSetting(weatherRequest));
-                } catch (Exception e) {
-                    Snackbar.make(view, "Error Connection", BaseTransientBottomBar.LENGTH_SHORT).show();
-                    Log.e(TAG, "Error Connection", e);
-                    e.printStackTrace();
-                } finally {
-                    if (null != urlConnection) {
-                        urlConnection.disconnect();
+    private void initRetrofit(){
+        Retrofit retrofit;
+        retrofit = new Retrofit.Builder()
+                .baseUrl("https://api.openweathermap.org/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        openWeather = retrofit.create(OpenWeather.class);
+    }
+
+    private void requestRetrofit(String cityCountry, String keyApi){
+        openWeather.loadWeather(cityCountry, keyApi)
+                .enqueue(new Callback<MainWeather>() {
+                    @Override
+                    public void onResponse(Call<MainWeather> call, Response<MainWeather> response) {
+                        if(response.body() != null){
+                            Double temp = response.body().getMain().getTemp() + absoluteZero;
+                            Toast.makeText(getApplicationContext(),temp.toString(),Toast.LENGTH_SHORT).show();
+                        }
                     }
-                }
-            }).start();
-        } catch (MalformedURLException e) {
-            Snackbar.make(view, "Error URL", BaseTransientBottomBar.LENGTH_SHORT).show();
-            Log.e(TAG, "Error URL", e);
-            e.printStackTrace();
-        }
-    }
 
-    private String getLines(BufferedReader in) {
-        return in.lines().collect(Collectors.joining("\n"));
-    }
-
-    private void saveSearchSetting(MainWeather MainWeather) {
-        Double temp = MainWeather.getMain().getTemp() - 273.15;
-        String tempString = temp.toString();
-        Toast.makeText(getApplicationContext(), tempString, Toast.LENGTH_LONG).show();
+                    @Override
+                    public void onFailure(Call<MainWeather> call, Throwable t) {
+                        Toast.makeText(getApplicationContext(),"Error",Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     private Toolbar initToolbar() {
@@ -175,14 +152,13 @@ public class MainActivity extends AppCompatActivity implements Constants, Select
         final SearchView searchText = (SearchView) search.getActionView(); // строка поиска
         searchText.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             // реагирует на конец ввода поиска
-            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public boolean onQueryTextSubmit(String query) {
-                getWeatherFromServer(coordinatorLayout, query);
-                Snackbar.make(searchText, query, Snackbar.LENGTH_LONG).show();
+                text = query;
+                requestRetrofit(query,WEATHER_API_KEY);
+//                Snackbar.make(searchText, query, Snackbar.LENGTH_LONG).show();
                 return true;
             }
-
             // реагирует на нажатие каждой клавиши
             @Override
             public boolean onQueryTextChange(String newText) {
@@ -216,6 +192,7 @@ public class MainActivity extends AppCompatActivity implements Constants, Select
         Toolbar toolbar = initToolbar();
         initToolbar();
         initDrawer(toolbar);
+        initRetrofit();
         startFragment(new MainFragment());
     }
 

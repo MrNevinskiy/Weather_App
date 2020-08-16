@@ -16,22 +16,22 @@ import android.widget.TextView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.hw.weather.R;
-import com.hw.weather.SelectedFragment;
+import com.hw.weather.SupportItemSelect;
 
 
 public class SensorFragment extends Fragment {
 
-    private TextView S_ACCELEROMETER;
-    private TextView S_TEMPERATURE;
-    private TextView S_GRAVITY;
-    private TextView S_HUMIDITY;
+    private TextView accelerometer;
+    private TextView temperature;
+    private TextView gravity;
+    private TextView humidity;
     private SensorManager sensorManager;
 
 
     private BottomNavigationView.OnNavigationItemSelectedListener selectedListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            ((SelectedFragment) requireContext()).NavigationItemSelected(item);
+            ((SupportItemSelect) requireContext()).NavigationItemSelected(item);
             return false;
         }
     };
@@ -50,31 +50,31 @@ public class SensorFragment extends Fragment {
         navView.getMenu().findItem(R.id.navigation_search).setChecked(true);
         navView.setOnNavigationItemSelectedListener(selectedListener);
 
-        S_ACCELEROMETER = view.findViewById(R.id.S_ACCELEROMETER);
-        S_TEMPERATURE = view.findViewById(R.id.S_TEMPERATURE);
-        S_HUMIDITY = view.findViewById(R.id.S_HUMIDITY);
+        accelerometer = view.findViewById(R.id.S_ACCELEROMETER);
+        temperature = view.findViewById(R.id.S_TEMPERATURE);
+        humidity = view.findViewById(R.id.S_HUMIDITY);
         init();
         return view;
     }
 
     private void init() {
-        sensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
+        sensorManager = (SensorManager) getContext().getSystemService(Context.SENSOR_SERVICE);
 
         if (sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null) {
             String sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER).toString();
-            S_ACCELEROMETER.setText(" S_ACCELEROMETER" + sensor);
+            accelerometer.setText(" S_ACCELEROMETER" + sensor);
         } else {
             return;
         }
         if (sensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE) != null) {
             String sensor = sensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE).toString();
-            S_TEMPERATURE.setText("S_TEMPERATURE" + sensor);
+            temperature.setText("S_TEMPERATURE" + sensor);
         } else {
             return;
         }
         if (sensorManager.getDefaultSensor(Sensor.TYPE_RELATIVE_HUMIDITY) != null) {
             String sensor = sensorManager.getDefaultSensor(Sensor.TYPE_RELATIVE_HUMIDITY).toString();
-            S_HUMIDITY.setText("S_HUMIDITY " + sensor);
+            humidity.setText("S_HUMIDITY " + sensor);
         } else {
             return;
         }
