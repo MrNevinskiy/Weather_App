@@ -4,6 +4,7 @@
     package="com.hw.weather">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
 
     <application
         android:name="com.hw.weather.room.App"
@@ -14,6 +15,16 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup">
+        <service android:name=".broadcast.FirebaseService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
+        <receiver android:name=".broadcast.PowerAlerts">
+            <intent-filter>
+                <action android:name="android.intent.action.ACTION_BATTERY_LOW"/>
+            </intent-filter>
+        </receiver>
         <service
             android:name=".service.WeatherServiceUpDate"
             android:enabled="true"

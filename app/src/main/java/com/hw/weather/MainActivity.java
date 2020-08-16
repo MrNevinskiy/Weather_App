@@ -1,6 +1,7 @@
 package com.hw.weather;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
@@ -11,19 +12,30 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
+import com.hw.weather.broadcast.NetworkAlerts;
+import com.hw.weather.broadcast.PowerAlerts;
 import com.hw.weather.fragment.main.MainFragment;
 import com.hw.weather.fragment.setting.MySettingFragment;
 import com.hw.weather.fragment.sensor.SensorFragment;
@@ -40,11 +52,40 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity implements Constants, SupportItemSelect {
 
+    private NetworkAlerts networkAlerts = new NetworkAlerts();
+    private PowerAlerts powerAlerts = new PowerAlerts();
     private CoordinatorLayout coordinatorLayout;
     private OpenWeather openWeather;
     private String text;
 
-    private void initRetrofit(){
+
+    private void initNotificationChannel() {
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        int importance = NotificationManager.IMPORTANCE_LOW;
+        NotificationChannel channel = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            channel = new NotificationChannel("3", "channel", importance);
+            notificationManager.createNotificationChannel(channel);
+        }
+
+        FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(task -> {
+            if (!task.isSuccessful()) {
+                Log.w(TAG, "getInstanceId failed", task.getException());
+                return;
+            }
+
+            // Get Instance ID token
+            String token = task.getResult().getToken();
+            Log.d(TAG, token);
+        });
+    }
+
+    private void registerBroadcastReceivers() {
+        registerReceiver(networkAlerts, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
+        registerReceiver(powerAlerts, new IntentFilter(Intent.ACTION_BATTERY_LOW));
+    }
+
+    private void initRetrofit() {
         Retrofit retrofit;
         retrofit = new Retrofit.Builder()
                 .baseUrl("https://api.openweathermap.org/")
@@ -53,20 +94,20 @@ public class MainActivity extends AppCompatActivity implements Constants, Suppor
         openWeather = retrofit.create(OpenWeather.class);
     }
 
-    private void requestRetrofit(String cityCountry, String keyApi){
+    private void requestRetrofit(String cityCountry, String keyApi) {
         openWeather.loadWeather(cityCountry, keyApi)
                 .enqueue(new Callback<MainWeather>() {
                     @Override
                     public void onResponse(Call<MainWeather> call, Response<MainWeather> response) {
-                        if(response.body() != null){
+                        if (response.body() != null) {
                             Double temp = response.body().getMain().getTemp() + absoluteZero;
-                            Toast.makeText(getApplicationContext(),temp.toString(),Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), temp.toString(), Toast.LENGTH_SHORT).show();
                         }
                     }
 
                     @Override
                     public void onFailure(Call<MainWeather> call, Throwable t) {
-                        Toast.makeText(getApplicationContext(),"Error",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "Error", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -155,10 +196,11 @@ public class MainActivity extends AppCompatActivity implements Constants, Suppor
             @Override
             public boolean onQueryTextSubmit(String query) {
                 text = query;
-                requestRetrofit(query,WEATHER_API_KEY);
+                requestRetrofit(query, WEATHER_API_KEY);
 //                Snackbar.make(searchText, query, Snackbar.LENGTH_LONG).show();
                 return true;
             }
+
             // реагирует на нажатие каждой клавиши
             @Override
             public boolean onQueryTextChange(String newText) {
@@ -184,6 +226,7 @@ public class MainActivity extends AppCompatActivity implements Constants, Suppor
         return super.onOptionsItemSelected(item);
     }
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -193,6 +236,8 @@ public class MainActivity extends AppCompatActivity implements Constants, Suppor
         initToolbar();
         initDrawer(toolbar);
         initRetrofit();
+        registerBroadcastReceivers();
+        initNotificationChannel();
         startFragment(new MainFragment());
     }
 
@@ -216,7 +261,7 @@ public class MainActivity extends AppCompatActivity implements Constants, Suppor
                 startFragment(new SearchFragment());
                 return true;
             case R.id.icon_about:
-                Snackbar.make(findViewById(R.id.test_replace), "Developed by MrAlex / Designed by Dimas_sugih from Freepik", Snackbar.LENGTH_LONG).setAction("Перейти",view -> {
+                Snackbar.make(findViewById(R.id.test_replace), "Developed by MrAlex / Designed by Dimas_sugih from Freepik", Snackbar.LENGTH_LONG).setAction("Перейти", view -> {
                     String url = "http://www.freepik.com";
                     Uri uri = Uri.parse(url);
                     Intent intent = new Intent(Intent.ACTION_VIEW, uri);
