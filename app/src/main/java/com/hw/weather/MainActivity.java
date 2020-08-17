@@ -186,6 +186,13 @@ public class MainActivity extends AppCompatActivity implements Constants, Suppor
     };
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(networkAlerts);
+        unregisterReceiver(powerAlerts);
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Здесь определяем меню приложения (активити)
         getMenuInflater().inflate(R.menu.menu, menu);
