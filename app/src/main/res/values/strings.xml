@@ -34,4 +34,5 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="sensor">Sensor</string>
     <string name="communicate">Communicate</string>
+    <string name="map">Map</string>
 </resources>
