@@ -1,7 +1,6 @@
 package com.hw.weather;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
@@ -20,23 +19,19 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
-
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.iid.InstanceIdResult;
 import com.hw.weather.broadcast.NetworkAlerts;
 import com.hw.weather.broadcast.PowerAlerts;
 import com.hw.weather.fragment.main.MainFragment;
+import com.hw.weather.fragment.maps.MapsFragment;
 import com.hw.weather.fragment.setting.MySettingFragment;
 import com.hw.weather.fragment.sensor.SensorFragment;
 import com.hw.weather.fragment.weatherRequest.MainWeather;
@@ -55,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements Constants, Suppor
     private NetworkAlerts networkAlerts = new NetworkAlerts();
     private PowerAlerts powerAlerts = new PowerAlerts();
     private CoordinatorLayout coordinatorLayout;
-    private OpenWeather openWeather;
+    private OpenWeatherByName openWeatherByName;
     private String text;
 
 
@@ -91,11 +86,11 @@ public class MainActivity extends AppCompatActivity implements Constants, Suppor
                 .baseUrl("https://api.openweathermap.org/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-        openWeather = retrofit.create(OpenWeather.class);
+        openWeatherByName = retrofit.create(OpenWeatherByName.class);
     }
 
     private void requestRetrofit(String cityCountry, String keyApi) {
-        openWeather.loadWeather(cityCountry, keyApi)
+        openWeatherByName.loadWeather(cityCountry, keyApi)
                 .enqueue(new Callback<MainWeather>() {
                     @Override
                     public void onResponse(Call<MainWeather> call, Response<MainWeather> response) {
@@ -142,6 +137,9 @@ public class MainActivity extends AppCompatActivity implements Constants, Suppor
 
         } else if (id == R.id.nav_sensor) {
             startFragment(new SensorFragment());
+
+        } else if (id == R.id.nav_map) {
+            startFragment(new MapsFragment());
 
         } else if (id == R.id.nav_feedback) {
             Snackbar.make(findViewById(R.id.drawer_layout), "Feedback", Snackbar.LENGTH_LONG).setAction(" -> ", view -> {
