@@ -19,6 +19,8 @@ public interface Constants {
     String APP_PREFERENCES_NIGHT = "night activity";
     String APP_PREFERENCES_WIND_SPEED_INFO = "wind speed info";
     String APP_PREFERENCES_PRESSURE_INFO = "pressure info";
+    String APP_PREFERENCES_ICON = "weather icon";
+    String APP_PREFERENCES_PHOTO = "photo user";
 
     String saved = "Настройки изменены.";
     String save = "На главный экран.";

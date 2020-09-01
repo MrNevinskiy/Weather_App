@@ -18,9 +18,9 @@
     <string name="home">Главный экран</string>
 
     <string-array name="date">
-        <item>16.07</item>
-        <item>17.07</item>
-        <item>18.07</item>
+        <item>дата</item>
+        <item>дата</item>
+        <item>дата</item>
     </string-array>
 
     <string name="info_city">Информация о городе</string>

@@ -3,6 +3,9 @@ package com.hw.weather.fragment.main;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -22,20 +25,20 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.snackbar.BaseTransientBottomBar;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textview.MaterialTextView;
 import com.hw.weather.Constants;
 import com.hw.weather.OpenWeatherByCoordinates;
-import com.hw.weather.OpenWeatherByName;
 import com.hw.weather.R;
-import com.hw.weather.SupportItemSelect;
 import com.hw.weather.fragment.main.weatherForecastView.SourceList;
 import com.hw.weather.fragment.main.weatherForecastView.WeatherList;
 import com.hw.weather.fragment.weatherRequest.MainWeather;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.util.Objects;
 
 import retrofit2.Call;
@@ -71,6 +74,11 @@ public class MainFragment extends Fragment implements Constants {
                             CurrentWeatherIcon(response);
                             String name = response.body().getName() + ", " + response.body().getSys().getCountry();
                             String temp = String.format(String.valueOf(response.body().getMain().getTemp() + absoluteZero));
+                            mSetting = requireContext().getSharedPreferences(APP_PREFERENCES,Context.MODE_PRIVATE);
+                            SharedPreferences.Editor editor = mSetting.edit();
+                            editor.putString(APP_PREFERENCES_CITY, name);
+                            editor.putString(APP_PREFERENCES_TEMPERATURE, temp);
+                            editor.apply();
                             temperatureFragment.setText(temp);
                             cityFragment.setText(name);
                         }
@@ -97,6 +105,33 @@ public class MainFragment extends Fragment implements Constants {
         Picasso.get()
                 .load("https://openweathermap.org/img/wn/" + response.body().getWeather().get(0).getIcon() + "@4x.png")
                 .into(weatherIcon);
+        Picasso.get()
+                .load("https://openweathermap.org/img/wn/" + response.body().getWeather().get(0).getIcon() + "@4x.png")
+                .into(new Target() {
+                    @Override
+                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                        weatherIcon.setImageBitmap(bitmap);
+                        File directory = requireActivity().getDir("icon", Context.MODE_PRIVATE);
+                        File file = new File(directory,"icon.png");
+                        try (FileOutputStream fileOutputStream = new FileOutputStream(file)){
+                            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        String path = directory.getAbsolutePath();
+                        mSetting.edit().putString(APP_PREFERENCES_ICON, path).apply();
+                    }
+
+                    @Override
+                    public void onBitmapFailed(Exception e, Drawable errorDrawable) {
+
+                    }
+
+                    @Override
+                    public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+                    }
+                });
     }
 
     @Override
@@ -165,6 +200,17 @@ public class MainFragment extends Fragment implements Constants {
         if (mSetting.contains(APP_PREFERENCES_CITY)) {
             MaterialTextView textView = (MaterialTextView) getView().findViewById(R.id.cityFragment);
             textView.setText(mSetting.getString(APP_PREFERENCES_CITY, "City"));
+        } if (mSetting.contains(APP_PREFERENCES_ICON)) {
+            try {
+            ImageView imageView = (ImageView) getView().findViewById(R.id.weatherIcon);
+            File file = new File(mSetting.getString(APP_PREFERENCES_ICON, null), "icon.png");
+            Bitmap bitmap = null;
+                bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
+            imageView.setImageBitmap(bitmap);
+            } catch (FileNotFoundException e) {
+                Log.w("File Not Found Exception",e);
+                e.printStackTrace();
+            }
         }
         if (mSetting.contains(APP_PREFERENCES_PRESSURE)) {
             getView().findViewById(R.id.pressureFragment).setVisibility((mSetting.getBoolean(APP_PREFERENCES_PRESSURE, true)) ? View.GONE : View.VISIBLE);

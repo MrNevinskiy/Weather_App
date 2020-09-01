@@ -26,9 +26,9 @@
     <string name="about">About</string>
 
     <string-array name="date">
-        <item>16.07</item>
-        <item>17.07</item>
-        <item>18.07</item>
+        <item>date</item>
+        <item>date</item>
+        <item>date</item>
     </string-array>
 
     <string name="sensor">Sensor</string>

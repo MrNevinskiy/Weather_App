@@ -1,6 +1,25 @@
 package com.hw.weather;
 
-import androidx.annotation.NonNull;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
@@ -11,20 +30,12 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.ServiceConnection;
-import android.net.Uri;
-import android.os.Bundle;
-import android.os.IBinder;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.Toast;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -32,10 +43,14 @@ import com.hw.weather.broadcast.NetworkAlerts;
 import com.hw.weather.broadcast.PowerAlerts;
 import com.hw.weather.fragment.main.MainFragment;
 import com.hw.weather.fragment.maps.MapsFragment;
-import com.hw.weather.fragment.setting.MySettingFragment;
-import com.hw.weather.fragment.sensor.SensorFragment;
-import com.hw.weather.fragment.weatherRequest.MainWeather;
 import com.hw.weather.fragment.search.SearchFragment;
+import com.hw.weather.fragment.setting.MySettingFragment;
+import com.hw.weather.fragment.weatherRequest.MainWeather;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
+
+import java.io.File;
+import java.io.FileOutputStream;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -51,6 +66,19 @@ public class MainActivity extends AppCompatActivity implements Constants, Suppor
     private CoordinatorLayout coordinatorLayout;
     private OpenWeatherByName openWeatherByName;
     private String text;
+    private NavigationView navigationView;
+    private SharedPreferences mSetting;
+
+    // Используется, чтобы определить результат Activity регистрации через
+    // Google
+    private static final int RC_SIGN_IN = 40404;
+    private static final String TAG = "GoogleAuth";
+
+    // Клиент для регистрации пользователя через Google
+    private GoogleSignInClient googleSignInClient;
+
+    // Кнопка регистрации через Google
+    private com.google.android.gms.common.SignInButton buttonSignIn;
 
 
     private void initNotificationChannel() {
@@ -114,7 +142,7 @@ public class MainActivity extends AppCompatActivity implements Constants, Suppor
 
     private void initDrawer(Toolbar toolbar) {
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView = findViewById(R.id.nav_view);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -133,9 +161,6 @@ public class MainActivity extends AppCompatActivity implements Constants, Suppor
 
         } else if (id == R.id.nav_search) {
             startFragment(new SearchFragment());
-
-        } else if (id == R.id.nav_sensor) {
-            startFragment(new SensorFragment());
 
         } else if (id == R.id.nav_map) {
             startFragment(new MapsFragment());
@@ -176,7 +201,7 @@ public class MainActivity extends AppCompatActivity implements Constants, Suppor
             public boolean onQueryTextSubmit(String query) {
                 text = query;
                 requestRetrofit(query, WEATHER_API_KEY);
-//                Snackbar.make(searchText, query, Snackbar.LENGTH_LONG).show();
+                Snackbar.make(searchText, query, Snackbar.LENGTH_LONG).show();
                 return true;
             }
 
@@ -191,20 +216,23 @@ public class MainActivity extends AppCompatActivity implements Constants, Suppor
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Обработка выбора пункта меню приложения (активити)
-        int id = item.getItemId();
-
-        if (id == R.id.action_add) {
-            return true;
+    protected void onStart() {
+        super.onStart();
+        // Проверим, входил ли пользователь в это приложение через Google
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+        if (account != null) {
+            // Пользователь уже входил, сделаем кнопку недоступной
+            buttonSignIn.setEnabled(false);
+            buttonSignIn.setVisibility(View.INVISIBLE);
+            // Обновим почтовый адрес этого пользователя и выведем его на экран
+            updateEmail(account.getEmail());
+            updateName(account.getDisplayName());
+            if (account.getPhotoUrl() != null) {
+                updatePhoto(account.getPhotoUrl());
+            }
         }
 
-        if (id == R.id.action_clear) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -217,37 +245,127 @@ public class MainActivity extends AppCompatActivity implements Constants, Suppor
         registerBroadcastReceivers();
         initNotificationChannel();
         startFragment(new MainFragment());
+        // Конфигурация запроса на регистрацию пользователя, чтобы получить
+        // идентификатор пользователя, его почту и основной профайл
+        // (регулируется параметром)
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+
+        // Получаем клиента для регистрации и данные по клиенту
+        googleSignInClient = GoogleSignIn.getClient(this, gso);
+
+        // Кнопка регистрации пользователя
+        buttonSignIn = navigationView.getHeaderView(0).findViewById(R.id.sign_in_button);
+        buttonSignIn.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                signIn();
+                                            }
+                                        }
+        );
+
     }
+
+    // Получаем результаты аутентификации от окна регистрации пользователя
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RC_SIGN_IN) {
+            // Когда сюда возвращается Task, результаты аутентификации уже
+            // готовы
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            handleSignInResult(task);
+        }
+    }
+
+    // Инициируем регистрацию пользователя
+    private void signIn() {
+        Intent signInIntent = googleSignInClient.getSignInIntent();
+        startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
+
+    // Получаем данные пользователя
+    private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
+        try {
+            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
+
+            // Регистрация прошла успешно
+            buttonSignIn.setEnabled(false);
+            buttonSignIn.setVisibility(View.INVISIBLE);
+            updateEmail(account.getEmail());
+            updateName(account.getDisplayName());
+            if (account.getPhotoUrl() != null) {
+                updatePhoto(account.getPhotoUrl());
+            }
+            Log.i(TAG, account.getEmail() + account.getPhotoUrl() + account.getDisplayName());
+        } catch (ApiException e) {
+            // The ApiException status code indicates the detailed failure
+            // reason. Please refer to the GoogleSignInStatusCodes class
+            // reference for more information.
+            Log.w(TAG, "signInResult:failed code=" + e.getStatusCode());
+        }
+    }
+
+    private void updatePhoto(Uri photoUrl) {
+        ImageView photo = navigationView.getHeaderView(0).findViewById(R.id.google_photo);
+        Picasso.get()
+                .load(photoUrl)
+                .into(new Target() {
+                    @Override
+                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                        File directory = getDir("photo", Context.MODE_PRIVATE);
+                        File file = new File(directory, "photo.png");
+                        try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
+//                            Matrix matrix = new Matrix();
+//                            // RESIZE THE BIT MAP
+//                            matrix.postScale(75, 75);
+//                            // "RECREATE" THE NEW BITMAP
+//                            Bitmap BM = Bitmap.createBitmap(
+//                                    bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, false);
+                            Bitmap bm = Bitmap.createScaledBitmap(
+                                    bitmap, 125, 125, false);
+                            bm.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
+                            photo.setImageBitmap(bm);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        String path = directory.getAbsolutePath();
+                        mSetting = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = mSetting.edit();
+                        editor.putString(APP_PREFERENCES_PHOTO, path).apply();
+                    }
+
+                    @Override
+                    public void onBitmapFailed(Exception e, Drawable errorDrawable) {
+                        Log.w(TAG, e);
+                    }
+
+                    @Override
+                    public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+                    }
+                });
+    }
+
+    private void updateName(String displayName) {
+        TextView token = navigationView.getHeaderView(0).findViewById(R.id.second_text);
+        token.setText(displayName);
+    }
+
+    // Обновляем данные о пользователе на экране
+    private void updateEmail(String idToken) {
+        TextView token = navigationView.getHeaderView(0).findViewById(R.id.first_text);
+        token.setText(idToken);
+    }
+
 
     @Override
     public void startFragment(Fragment fragment) {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.test_replace, fragment);
         ft.commit();
-    }
-
-    @Override
-    public boolean NavigationItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.navigation_home:
-                startFragment(new MainFragment());
-                return true;
-            case R.id.navigation_setting:
-                startFragment(new MySettingFragment());
-                return true;
-            case R.id.navigation_search:
-                startFragment(new SearchFragment());
-                return true;
-            case R.id.icon_about:
-                Snackbar.make(findViewById(R.id.test_replace), "Developed by MrAlex / Designed by Dimas_sugih from Freepik", Snackbar.LENGTH_LONG).setAction("Перейти", view -> {
-                    String url = "http://www.freepik.com";
-                    Uri uri = Uri.parse(url);
-                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                    startActivity(intent);
-                }).show();
-                return true;
-        }
-        return false;
     }
 
 }
