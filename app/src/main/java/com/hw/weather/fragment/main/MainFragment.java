@@ -47,21 +47,11 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MainFragment extends Fragment implements Constants {
 
     private SharedPreferences mSetting;
-    private OpenWeatherByName openWeatherByName;
     private OpenWeatherByCoordinates openWeatherByCoordinates;
     private ImageView weatherIcon;
     private MaterialTextView temperatureFragment;
     private MaterialTextView cityFragment;
-//    private FragmentMainBinding binding;
 
-    private void initRetrofitByName() {
-        Retrofit retrofit;
-        retrofit = new Retrofit.Builder()
-                .baseUrl("https://api.openweathermap.org/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        openWeatherByName = retrofit.create(OpenWeatherByName.class);
-    }
     private void initRetrofitByCoord() {
         Retrofit retrofit;
         retrofit = new Retrofit.Builder()
@@ -69,27 +59,6 @@ public class MainFragment extends Fragment implements Constants {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         openWeatherByCoordinates = retrofit.create(OpenWeatherByCoordinates.class);
-    }
-
-    private void requestRetrofitByName(String cityCountry, String keyApi, View view) {
-        openWeatherByName.loadWeather(cityCountry, keyApi)
-                .enqueue(new Callback<MainWeather>() {
-                    @Override
-                    public void onResponse(Call<MainWeather> call, Response<MainWeather> response) {
-                        if (response.body() != null) {
-                            CurrentWeatherIcon(response);
-                            Double temp = response.body().getMain().getTemp() + absoluteZero;
-                            temperatureFragment.setText(String.format("%+.0f", temp));
-                            cityFragment.setText("Moscow");
-                            Snackbar.make(view, "up", BaseTransientBottomBar.LENGTH_SHORT).show();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<MainWeather> call, Throwable t) {
-                        Snackbar.make(view, "Error", BaseTransientBottomBar.LENGTH_SHORT).show();
-                    }
-                });
     }
 
     private void requestRetrofitByCoord(String latitude, String longitude) {
@@ -138,16 +107,9 @@ public class MainFragment extends Fragment implements Constants {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
-//        binding = FragmentMainBinding.inflate(inflater, container, false);
-//        View view = binding.getRoot();
-        BottomNavigationView navView = view.findViewById(R.id.nav_view_home);
-        navView.getMenu().findItem(R.id.navigation_home).setChecked(true);
-        navView.setOnNavigationItemSelectedListener(selectedListener);
         weatherIcon = view.findViewById(R.id.weatherIcon);
         temperatureFragment = view.findViewById(R.id.temperatureFragment);
         cityFragment = view.findViewById(R.id.cityFragment);
-//        initRetrofitByName();
-//        requestRetrofit("Moscow,RU", WEATHER_API_KEY, view);
         return view;
     }
 
@@ -161,10 +123,6 @@ public class MainFragment extends Fragment implements Constants {
         testFragmentResult();
     }
 
-    private BottomNavigationView.OnNavigationItemSelectedListener selectedListener = item -> {
-        ((SupportItemSelect) requireContext()).NavigationItemSelected(item);
-        return false;
-    };
 
     private void checkCity(@NonNull View view) {
         ImageButton infoCity = view.findViewById(R.id.infoCity);
@@ -216,7 +174,7 @@ public class MainFragment extends Fragment implements Constants {
         }
         if (mSetting.contains(APP_PREFERENCES_TEMPERATURE)) {
             MaterialTextView textView = (MaterialTextView) getView().findViewById(R.id.temperatureFragment);
-            textView.setText(mSetting.getString(APP_PREFERENCES_TEMPERATURE, "Температура 22°"));
+            textView.setText(mSetting.getString(APP_PREFERENCES_TEMPERATURE, "null"));
         }
         if (mSetting.contains(APP_PREFERENCES_DATE)) {
             MaterialTextView textView = (MaterialTextView) getView().findViewById(R.id.dateFragment);
@@ -224,11 +182,11 @@ public class MainFragment extends Fragment implements Constants {
         }
         if (mSetting.contains(APP_PREFERENCES_PRESSURE_INFO)) {
             MaterialTextView textView = (MaterialTextView) getView().findViewById(R.id.pressureFragment);
-            textView.setText(mSetting.getString(APP_PREFERENCES_PRESSURE_INFO, "Давление 739.00 мм."));
+            textView.setText(mSetting.getString(APP_PREFERENCES_PRESSURE_INFO, "null"));
         }
         if (mSetting.contains(APP_PREFERENCES_WIND_SPEED_INFO)) {
             MaterialTextView textView = (MaterialTextView) getView().findViewById(R.id.windSpeedFragment);
-            textView.setText(mSetting.getString(APP_PREFERENCES_WIND_SPEED_INFO, "Скорость ветра 5 м.с"));
+            textView.setText(mSetting.getString(APP_PREFERENCES_WIND_SPEED_INFO, "null"));
         }
     }
 }

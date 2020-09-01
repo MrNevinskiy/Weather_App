@@ -28,14 +28,6 @@ public class SensorFragment extends Fragment {
     private SensorManager sensorManager;
 
 
-    private BottomNavigationView.OnNavigationItemSelectedListener selectedListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            ((SupportItemSelect) requireContext()).NavigationItemSelected(item);
-            return false;
-        }
-    };
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,11 +37,6 @@ public class SensorFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_sensor, container, false);
-
-        com.google.android.material.bottomnavigation.BottomNavigationView navView = view.findViewById(R.id.nav_view_search);
-        navView.getMenu().findItem(R.id.navigation_search).setChecked(true);
-        navView.setOnNavigationItemSelectedListener(selectedListener);
-
         accelerometer = view.findViewById(R.id.S_ACCELEROMETER);
         temperature = view.findViewById(R.id.S_TEMPERATURE);
         humidity = view.findViewById(R.id.S_HUMIDITY);

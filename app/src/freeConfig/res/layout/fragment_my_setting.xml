@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragment.setting.MySettingFragment">
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="100dp"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="UselessParent">
+
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/nightActivityFragment"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="@string/night" />
+
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/windSpeedFragmentSetting"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="@string/wind_speedBox" />
+
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/pressureFragmentSetting"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="@string/pressureBox" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/saveSettingFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/save"
+            app:backgroundTint="#37619F" />
+
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

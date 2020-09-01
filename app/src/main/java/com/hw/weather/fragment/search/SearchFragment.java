@@ -56,9 +56,6 @@ public class SearchFragment extends Fragment implements Constants {
         View view = inflater.inflate(R.layout.fragment_search, container, false);
 //        binding = FragmentMainBinding.inflate(inflater, container, false);
 //        View view = binding.getRoot();
-        BottomNavigationView navView = view.findViewById(R.id.nav_view_search);
-        navView.getMenu().findItem(R.id.navigation_search).setChecked(true);
-        navView.setOnNavigationItemSelectedListener(selectedListener);
         initRetrofit();
         return view;
     }
@@ -127,11 +124,6 @@ public class SearchFragment extends Fragment implements Constants {
         editor.apply();
         Snackbar.make(getView(), "Update" + String.valueOf(temp), BaseTransientBottomBar.LENGTH_LONG).show();
     }
-
-    private BottomNavigationView.OnNavigationItemSelectedListener selectedListener = item -> {
-        ((SupportItemSelect) requireContext()).NavigationItemSelected(item);
-        return false;
-    };
 
     private void init() {
         RecyclerView recyclerView = (RecyclerView) getView().findViewById(R.id.weatherListSearch);
