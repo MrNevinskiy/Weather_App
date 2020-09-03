@@ -30,47 +30,27 @@
             android:id="@+id/temperatureR"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
+            android:layout_marginStart="50dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="40dp"
             android:text="@string/temperature"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.638"
-            app:layout_constraintStart_toEndOf="@+id/windSpeedR"
-            app:layout_constraintTop_toBottomOf="@+id/pressureR" />
-
-        <TextView
-            android:id="@+id/pressureR"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
-            android:layout_marginEnd="3dp"
-            android:layout_weight="1"
-            android:text="@string/pressure"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.478"
-            app:layout_constraintStart_toEndOf="@+id/windSpeedR"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/windSpeedR"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="40dp"
-            android:text="@string/wind_speed"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/weatherIcon"
-            app:layout_constraintTop_toBottomOf="@+id/dateR" />
+            app:layout_constraintStart_toEndOf="@+id/dateR"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0" />
 
         <TextView
             android:id="@+id/dateR"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="20dp"
             android:layout_weight="1"
             android:text="@string/date"
-            app:layout_constraintEnd_toStartOf="@+id/pressureR"
-            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintEnd_toStartOf="@+id/temperatureR"
+            app:layout_constraintHorizontal_bias="0.078"
             app:layout_constraintStart_toEndOf="@+id/weatherIcon"
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>

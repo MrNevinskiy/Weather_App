@@ -42,5 +42,6 @@
     <string name="no_network">Нет сети</string>
     <string name="low_charge">Низкий заряд</string>
     <string name="сonnect_charger">Подключите зарядное устройство</string>
+    <string name="today">Cегодня</string>
 
 </resources>

@@ -42,5 +42,6 @@
     <string name="no_network">No network</string>
     <string name="low_charge">Low charge</string>
     <string name="сonnect_charger">Connect the charger</string>
+    <string name="today">Today</string>
 
 </resources>
