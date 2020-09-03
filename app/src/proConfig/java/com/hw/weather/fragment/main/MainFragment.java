@@ -24,6 +24,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.google.android.material.textview.MaterialTextView;
 import com.hw.weather.Constants;
@@ -39,6 +40,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.util.Calendar;
 import java.util.Objects;
 
 import retrofit2.Call;
@@ -52,8 +54,6 @@ public class MainFragment extends Fragment implements Constants {
     private SharedPreferences mSetting;
     private OpenWeatherByCoordinates openWeatherByCoordinates;
     private ImageView weatherIcon;
-    private MaterialTextView temperatureFragment;
-    private MaterialTextView cityFragment;
 
     private void initRetrofitByCoord() {
         Retrofit retrofit;
@@ -73,14 +73,24 @@ public class MainFragment extends Fragment implements Constants {
                         if (response.body() != null) {
                             CurrentWeatherIcon(response);
                             String name = response.body().getName() + ", " + response.body().getSys().getCountry();
-                            String temp = String.format(String.valueOf(response.body().getMain().getTemp() + absoluteZero));
+                            String temp = String.valueOf(response.body().getMain().getTemp() + absoluteZero).substring(0,2) + "°C";
+                            String tempMin = String.valueOf(response.body().getMain().getTempMin() + absoluteZero).substring(0,2) + "°C";
+                            String tempMax = String.valueOf(response.body().getMain().getTempMax() + absoluteZero).substring(0,2) + "°C";
+                            long press =  response.body().getVisibility().longValue();
+                            Double wind = response.body().getWind().getSpeed().doubleValue();
+                            String up = Calendar.getInstance().getTime().toString();
                             mSetting = requireContext().getSharedPreferences(APP_PREFERENCES,Context.MODE_PRIVATE);
                             SharedPreferences.Editor editor = mSetting.edit();
                             editor.putString(APP_PREFERENCES_CITY, name);
                             editor.putString(APP_PREFERENCES_TEMPERATURE, temp);
+                            editor.putString(APP_PREFERENCES_TEMPERATURE_MIN, tempMin);
+                            editor.putString(APP_PREFERENCES_TEMPERATURE_MAX, tempMax);
+                            editor.putString(APP_PREFERENCES_DATE, up);
+                            editor.putString(APP_PREFERENCES_UPDATE, up);
+                            editor.putString(APP_PREFERENCES_PRESSURE_INFO, String.valueOf(press));
+                            editor.putString(APP_PREFERENCES_WIND_SPEED_INFO, String.valueOf(wind));
                             editor.apply();
-                            temperatureFragment.setText(temp);
-                            cityFragment.setText(name);
+                            getPrefSetting();
                         }
                     }
 
@@ -98,6 +108,7 @@ public class MainFragment extends Fragment implements Constants {
             Log.d(TAG, "mapRequest: "+ lat + " ," + lon);
             initRetrofitByCoord();
             requestRetrofitByCoord(lat, lon);
+
         });
     }
 
@@ -119,7 +130,7 @@ public class MainFragment extends Fragment implements Constants {
                             e.printStackTrace();
                         }
                         String path = directory.getAbsolutePath();
-                        mSetting.edit().putString(APP_PREFERENCES_ICON, path).apply();
+                        mSetting.edit().putString(APP_PREFERENCES_ICON, path + "\\icon.png").apply();
                     }
 
                     @Override
@@ -143,8 +154,6 @@ public class MainFragment extends Fragment implements Constants {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         weatherIcon = view.findViewById(R.id.weatherIcon);
-        temperatureFragment = view.findViewById(R.id.temperatureFragment);
-        cityFragment = view.findViewById(R.id.cityFragment);
         return view;
     }
 
@@ -221,6 +230,14 @@ public class MainFragment extends Fragment implements Constants {
         if (mSetting.contains(APP_PREFERENCES_TEMPERATURE)) {
             MaterialTextView textView = (MaterialTextView) getView().findViewById(R.id.temperatureFragment);
             textView.setText(mSetting.getString(APP_PREFERENCES_TEMPERATURE, "null"));
+        }
+        if (mSetting.contains(APP_PREFERENCES_TEMPERATURE_MIN)) {
+            MaterialTextView textView = (MaterialTextView) getView().findViewById(R.id.temp_min);
+            textView.setText(mSetting.getString(APP_PREFERENCES_TEMPERATURE_MIN, "null"));
+        }
+        if (mSetting.contains(APP_PREFERENCES_TEMPERATURE_MAX)) {
+            MaterialTextView textView = (MaterialTextView) getView().findViewById(R.id.temp_max);
+            textView.setText(mSetting.getString(APP_PREFERENCES_TEMPERATURE_MAX, "null"));
         }
         if (mSetting.contains(APP_PREFERENCES_DATE)) {
             MaterialTextView textView = (MaterialTextView) getView().findViewById(R.id.dateFragment);

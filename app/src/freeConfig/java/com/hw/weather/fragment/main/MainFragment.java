@@ -3,6 +3,8 @@ package com.hw.weather.fragment.main;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -15,10 +17,12 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import com.google.android.material.textview.MaterialTextView;
 import com.hw.weather.Constants;
@@ -26,6 +30,9 @@ import com.hw.weather.R;
 import com.hw.weather.fragment.main.weatherForecastView.SourceList;
 import com.hw.weather.fragment.main.weatherForecastView.WeatherList;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.Objects;
 
 public class MainFragment extends Fragment implements Constants {
@@ -94,6 +101,17 @@ public class MainFragment extends Fragment implements Constants {
         if (mSetting.contains(APP_PREFERENCES_CITY)) {
             MaterialTextView textView = (MaterialTextView) getView().findViewById(R.id.cityFragment);
             textView.setText(mSetting.getString(APP_PREFERENCES_CITY, "City"));
+        } if (mSetting.contains(APP_PREFERENCES_ICON)) {
+            try {
+                ImageView imageView = (ImageView) getView().findViewById(R.id.weatherIcon);
+                File file = new File(mSetting.getString(APP_PREFERENCES_ICON, null), "icon.png");
+                Bitmap bitmap = null;
+                bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
+                imageView.setImageBitmap(bitmap);
+            } catch (FileNotFoundException e) {
+                Log.w("File Not Found Exception",e);
+                e.printStackTrace();
+            }
         }
         if (mSetting.contains(APP_PREFERENCES_PRESSURE)) {
             getView().findViewById(R.id.pressureFragment).setVisibility((mSetting.getBoolean(APP_PREFERENCES_PRESSURE, true)) ? View.GONE : View.VISIBLE);
@@ -104,6 +122,14 @@ public class MainFragment extends Fragment implements Constants {
         if (mSetting.contains(APP_PREFERENCES_TEMPERATURE)) {
             MaterialTextView textView = (MaterialTextView) getView().findViewById(R.id.temperatureFragment);
             textView.setText(mSetting.getString(APP_PREFERENCES_TEMPERATURE, "null"));
+        }
+        if (mSetting.contains(APP_PREFERENCES_TEMPERATURE_MIN)) {
+            MaterialTextView textView = (MaterialTextView) getView().findViewById(R.id.temp_min);
+            textView.setText(mSetting.getString(APP_PREFERENCES_TEMPERATURE_MIN, "null"));
+        }
+        if (mSetting.contains(APP_PREFERENCES_TEMPERATURE_MAX)) {
+            MaterialTextView textView = (MaterialTextView) getView().findViewById(R.id.temp_max);
+            textView.setText(mSetting.getString(APP_PREFERENCES_TEMPERATURE_MAX, "null"));
         }
         if (mSetting.contains(APP_PREFERENCES_DATE)) {
             MaterialTextView textView = (MaterialTextView) getView().findViewById(R.id.dateFragment);

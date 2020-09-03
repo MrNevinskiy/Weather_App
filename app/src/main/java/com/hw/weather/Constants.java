@@ -14,6 +14,8 @@ public interface Constants {
     String APP_PREFERENCES_WIND_SPEED = "wind speed";
     String APP_PREFERENCES_PRESSURE = "pressure";
     String APP_PREFERENCES_TEMPERATURE = "temperature";
+    String APP_PREFERENCES_TEMPERATURE_MIN = "temperature_min";
+    String APP_PREFERENCES_TEMPERATURE_MAX = "temperature_max";
     String APP_PREFERENCES_UPDATE = "update";
     String APP_PREFERENCES_DATE = "date";
     String APP_PREFERENCES_NIGHT = "night activity";

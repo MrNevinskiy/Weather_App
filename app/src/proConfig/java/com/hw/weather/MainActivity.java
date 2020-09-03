@@ -122,8 +122,8 @@ public class MainActivity extends AppCompatActivity implements Constants, Suppor
                     @Override
                     public void onResponse(Call<MainWeather> call, Response<MainWeather> response) {
                         if (response.body() != null) {
-                            Double temp = response.body().getMain().getTemp() + absoluteZero;
-                            Toast.makeText(getApplicationContext(), temp.toString(), Toast.LENGTH_SHORT).show();
+                            String temp = String.valueOf(response.body().getMain().getTemp() + absoluteZero).substring(0,2) + "°C";
+                            Toast.makeText(getApplicationContext(), temp, Toast.LENGTH_SHORT).show();
                         }
                     }
 
@@ -202,6 +202,7 @@ public class MainActivity extends AppCompatActivity implements Constants, Suppor
                 text = query;
                 requestRetrofit(query, WEATHER_API_KEY);
                 Snackbar.make(searchText, query, Snackbar.LENGTH_LONG).show();
+                searchText.clearFocus();
                 return true;
             }
 
@@ -334,7 +335,7 @@ public class MainActivity extends AppCompatActivity implements Constants, Suppor
                         String path = directory.getAbsolutePath();
                         mSetting = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = mSetting.edit();
-                        editor.putString(APP_PREFERENCES_PHOTO, path).apply();
+                        editor.putString(APP_PREFERENCES_PHOTO, path + "\\photo.png").apply();
                     }
 
                     @Override
