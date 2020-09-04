@@ -130,7 +130,7 @@ public class MainFragment extends Fragment implements Constants {
                             e.printStackTrace();
                         }
                         String path = directory.getAbsolutePath();
-                        mSetting.edit().putString(APP_PREFERENCES_ICON, path + "\\icon.png").apply();
+                        mSetting.edit().putString(APP_PREFERENCES_ICON, path + "/icon.png").apply();
                     }
 
                     @Override
@@ -212,7 +212,7 @@ public class MainFragment extends Fragment implements Constants {
         } if (mSetting.contains(APP_PREFERENCES_ICON)) {
             try {
             ImageView imageView = (ImageView) getView().findViewById(R.id.weatherIcon);
-            File file = new File(mSetting.getString(APP_PREFERENCES_ICON, null), "icon.png");
+            File file = new File("/data/data/com.hw.weather.pro/app_icon/icon.png");
             Bitmap bitmap = null;
                 bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
             imageView.setImageBitmap(bitmap);

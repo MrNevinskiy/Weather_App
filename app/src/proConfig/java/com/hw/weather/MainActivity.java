@@ -50,6 +50,8 @@ import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
 import retrofit2.Call;
@@ -122,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements Constants, Suppor
                     @Override
                     public void onResponse(Call<MainWeather> call, Response<MainWeather> response) {
                         if (response.body() != null) {
-                            String temp = String.valueOf(response.body().getMain().getTemp() + absoluteZero).substring(0,2) + "°C";
+                            String temp = String.valueOf(response.body().getMain().getTemp() + absoluteZero).substring(0, 2) + "°C";
                             Toast.makeText(getApplicationContext(), temp, Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -228,11 +230,18 @@ public class MainActivity extends AppCompatActivity implements Constants, Suppor
             // Обновим почтовый адрес этого пользователя и выведем его на экран
             updateEmail(account.getEmail());
             updateName(account.getDisplayName());
-            if (account.getPhotoUrl() != null) {
-                updatePhoto(account.getPhotoUrl());
-            }
+                try {
+                    ImageView imageView = navigationView.getHeaderView(0).findViewById(R.id.google_photo);
+                    File file = new File("/data/data/com.hw.weather.pro/app_photo/photo.png");
+                    Bitmap bitmap = null;
+                    bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
+                    imageView.setImageBitmap(bitmap);
+                } catch (FileNotFoundException e) {
+                    Log.w("File Not Found Exception", e);
+                    e.printStackTrace();
+                }
+                Log.i(TAG, account.getEmail() + account.getPhotoUrl() + account.getDisplayName());
         }
-
     }
 
     @Override
@@ -291,21 +300,18 @@ public class MainActivity extends AppCompatActivity implements Constants, Suppor
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
-
             // Регистрация прошла успешно
             buttonSignIn.setEnabled(false);
             buttonSignIn.setVisibility(View.INVISIBLE);
             updateEmail(account.getEmail());
             updateName(account.getDisplayName());
-            if (account.getPhotoUrl() != null) {
-                updatePhoto(account.getPhotoUrl());
-            }
-            Log.i(TAG, account.getEmail() + account.getPhotoUrl() + account.getDisplayName());
+            updatePhoto(account.getPhotoUrl());
         } catch (ApiException e) {
             // The ApiException status code indicates the detailed failure
             // reason. Please refer to the GoogleSignInStatusCodes class
             // reference for more information.
             Log.w(TAG, "signInResult:failed code=" + e.getStatusCode());
+            e.printStackTrace();
         }
     }
 
@@ -325,8 +331,8 @@ public class MainActivity extends AppCompatActivity implements Constants, Suppor
 //                            // "RECREATE" THE NEW BITMAP
 //                            Bitmap BM = Bitmap.createBitmap(
 //                                    bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, false);
-                            Bitmap bm = Bitmap.createScaledBitmap(
-                                    bitmap, 125, 125, false);
+                            Bitmap bm = null;
+                            bm = Bitmap.createScaledBitmap(bitmap, 125, 125, false);
                             bm.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
                             photo.setImageBitmap(bm);
                         } catch (Exception e) {
@@ -335,7 +341,7 @@ public class MainActivity extends AppCompatActivity implements Constants, Suppor
                         String path = directory.getAbsolutePath();
                         mSetting = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = mSetting.edit();
-                        editor.putString(APP_PREFERENCES_PHOTO, path + "\\photo.png").apply();
+                        editor.putString(APP_PREFERENCES_PHOTO, path + "/photo.png").apply();
                     }
 
                     @Override
