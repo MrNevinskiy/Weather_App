@@ -1,16 +1,5 @@
 package com.hw.weather;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SearchView;
-import androidx.appcompat.widget.Toolbar;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
-
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.ComponentName;
@@ -25,6 +14,18 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -32,11 +33,10 @@ import com.hw.weather.broadcast.NetworkAlerts;
 import com.hw.weather.broadcast.PowerAlerts;
 import com.hw.weather.fragment.main.MainFragment;
 import com.hw.weather.fragment.maps.MapsFragment;
-import com.hw.weather.fragment.setting.MySettingFragment;
-import com.hw.weather.fragment.sensor.SensorFragment;
-import com.hw.weather.fragment.weatherRequest.MainWeather;
 import com.hw.weather.fragment.search.SearchFragment;
-import com.hw.weather.service.WeatherServiceUpDate;
+import com.hw.weather.fragment.sensor.SensorFragment;
+import com.hw.weather.fragment.setting.MySettingFragment;
+import com.hw.weather.fragment.weatherRequest.MainWeather;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -158,31 +158,6 @@ public class MainActivity extends AppCompatActivity implements Constants, Suppor
         return true;
     }
 
-    private void initService() {
-        Intent intent = new Intent(this, WeatherServiceUpDate.class);
-        bindService(intent, boundServiceConnection, Context.BIND_AUTO_CREATE);
-    }
-
-    private ServiceConnection boundServiceConnection = new ServiceConnection() {
-
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder binder) {
-            WeatherServiceUpDate.ServiceBinder serviceBinder = (WeatherServiceUpDate.ServiceBinder) binder;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {
-        }
-
-        @Override
-        public void onBindingDied(ComponentName name) {
-        }
-
-        @Override
-        public void onNullBinding(ComponentName name) {
-        }
-    };
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -217,26 +192,9 @@ public class MainActivity extends AppCompatActivity implements Constants, Suppor
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Обработка выбора пункта меню приложения (активити)
-        int id = item.getItemId();
-
-        if (id == R.id.action_add) {
-            return true;
-        }
-
-        if (id == R.id.action_clear) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        initService();
         Toolbar toolbar = initToolbar();
         initToolbar();
         initDrawer(toolbar);

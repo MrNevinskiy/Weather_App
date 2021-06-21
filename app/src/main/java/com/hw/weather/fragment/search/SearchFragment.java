@@ -56,9 +56,6 @@ public class SearchFragment extends Fragment implements Constants {
         View view = inflater.inflate(R.layout.fragment_search, container, false);
 //        binding = FragmentMainBinding.inflate(inflater, container, false);
 //        View view = binding.getRoot();
-        BottomNavigationView navView = view.findViewById(R.id.nav_view_search);
-        navView.getMenu().findItem(R.id.navigation_search).setChecked(true);
-        navView.setOnNavigationItemSelectedListener(selectedListener);
         initRetrofit();
         return view;
     }
@@ -102,36 +99,35 @@ public class SearchFragment extends Fragment implements Constants {
 
     private void dbInsert(Response<MainWeather> response) {
         String up = Calendar.getInstance().getTime().toString();
-        Double temp = response.body().getMain().getTemp() + absoluteZero;
+        String temp = String.valueOf(response.body().getMain().getTemp() + absoluteZero).substring(0,2) + "°C";
         WeatherCity newWeatherCity = new WeatherCity();
         newWeatherCity.city = country;
         newWeatherCity.date = up;
-        newWeatherCity.temp = temp.toString();
+        newWeatherCity.temp = temp;
         weatherSource.addCity(newWeatherCity);
         adapterSearchHistoric.notifyDataSetChanged();
     }
 
     private void saveSearchSetting(Response<MainWeather> response) {
-        Double temp = response.body().getMain().getTemp() + absoluteZero;
-        long press = response.body().getVisibility().longValue();
+        String name = response.body().getName() + ", " + response.body().getSys().getCountry();
+        String temp = String.valueOf(response.body().getMain().getTemp() + absoluteZero).substring(0,2) + "°C";
+        String tempMin = String.valueOf(response.body().getMain().getTempMin() + absoluteZero).substring(0,2) + "°C";
+        String tempMax = String.valueOf(response.body().getMain().getTempMax() + absoluteZero).substring(0,2) + "°C";
+        long press =  response.body().getVisibility().longValue();
         Double wind = response.body().getWind().getSpeed().doubleValue();
-        String up = response.body().getTimezone().toString();
+        String up = Calendar.getInstance().getTime().toString();
         mSetting = requireContext().getSharedPreferences(APP_PREFERENCES,Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = mSetting.edit();
-        editor.putString(APP_PREFERENCES_CITY, country);
-        editor.putString(APP_PREFERENCES_TEMPERATURE, String.valueOf(temp));
+        editor.putString(APP_PREFERENCES_CITY, name);
+        editor.putString(APP_PREFERENCES_TEMPERATURE, temp);
+        editor.putString(APP_PREFERENCES_TEMPERATURE_MIN, tempMin);
+        editor.putString(APP_PREFERENCES_TEMPERATURE_MAX, tempMax);
         editor.putString(APP_PREFERENCES_DATE, up);
         editor.putString(APP_PREFERENCES_UPDATE, up);
         editor.putString(APP_PREFERENCES_PRESSURE_INFO, String.valueOf(press));
         editor.putString(APP_PREFERENCES_WIND_SPEED_INFO, String.valueOf(wind));
         editor.apply();
-        Snackbar.make(getView(), "Update" + String.valueOf(temp), BaseTransientBottomBar.LENGTH_LONG).show();
     }
-
-    private BottomNavigationView.OnNavigationItemSelectedListener selectedListener = item -> {
-        ((SupportItemSelect) requireContext()).NavigationItemSelected(item);
-        return false;
-    };
 
     private void init() {
         RecyclerView recyclerView = (RecyclerView) getView().findViewById(R.id.weatherListSearch);

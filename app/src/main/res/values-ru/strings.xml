@@ -18,9 +18,30 @@
     <string name="home">Главный экран</string>
 
     <string-array name="date">
-        <item>16.07</item>
-        <item>17.07</item>
-        <item>18.07</item>
+        <item>дата</item>
+        <item>дата</item>
+        <item>дата</item>
     </string-array>
+
+    <string name="info_city">Информация о городе</string>
+    <string name="icon_about">Иконка о разработчике</string>
+    <string name="navigation_drawer_open">Открыть навигационный драйвер</string>
+    <string name="navigation_drawer_close">Закрытие навигационного драйвера</string>
+    <string name="add">Добавить</string>
+    <string name="clear">Очистить</string>
+    <string name="feedback">Обратная связь</string>
+    <string name="about">О приложении</string>
+    <string name="sensor">Сенсор</string>
+    <string name="communicate">Связаться</string>
+    <string name="map">Карта</string>
+    <string name="push_message">Пуш уведомление</string>
+    <string name="connectivity_change">Изменение подключения</string>
+    <string name="сonnection_restored">Связь восстановлена</string>
+    <string name="cellular_network">Сотовая связь</string>
+    <string name="wifi_network">WiFi подключен</string>
+    <string name="no_network">Нет сети</string>
+    <string name="low_charge">Низкий заряд</string>
+    <string name="сonnect_charger">Подключите зарядное устройство</string>
+    <string name="today">Cегодня</string>
 
 </resources>

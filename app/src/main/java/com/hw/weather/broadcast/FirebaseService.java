@@ -22,7 +22,7 @@ public class FirebaseService extends FirebaseMessagingService implements Constan
         Log.d(TAG, remoteMessage.getNotification().getBody());
         String title = remoteMessage.getNotification().getTitle();
         if (title == null) {
-            title = "Push Message";
+            title = getResources().getString(R.string.push_message);
         }
         String text = remoteMessage.getNotification().getBody();
         createNotification(title, text);

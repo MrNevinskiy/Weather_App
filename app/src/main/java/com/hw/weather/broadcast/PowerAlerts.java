@@ -15,10 +15,10 @@ public class PowerAlerts extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "2")
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "3")
                 .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentTitle("Charging connected")
-                .setContentText("BATTERY LOW");
+                .setContentTitle(context.getString(R.string.сonnect_charger))
+                .setContentText(context.getString(R.string.low_charge));
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(Id++, builder.build());
     }

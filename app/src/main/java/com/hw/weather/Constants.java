@@ -14,11 +14,15 @@ public interface Constants {
     String APP_PREFERENCES_WIND_SPEED = "wind speed";
     String APP_PREFERENCES_PRESSURE = "pressure";
     String APP_PREFERENCES_TEMPERATURE = "temperature";
+    String APP_PREFERENCES_TEMPERATURE_MIN = "temperature_min";
+    String APP_PREFERENCES_TEMPERATURE_MAX = "temperature_max";
     String APP_PREFERENCES_UPDATE = "update";
     String APP_PREFERENCES_DATE = "date";
     String APP_PREFERENCES_NIGHT = "night activity";
     String APP_PREFERENCES_WIND_SPEED_INFO = "wind speed info";
     String APP_PREFERENCES_PRESSURE_INFO = "pressure info";
+    String APP_PREFERENCES_ICON = "weather icon";
+    String APP_PREFERENCES_PHOTO = "photo user";
 
     String saved = "Настройки изменены.";
     String save = "На главный экран.";

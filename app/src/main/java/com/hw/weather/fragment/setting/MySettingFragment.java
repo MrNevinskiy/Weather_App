@@ -29,19 +29,11 @@ public class MySettingFragment extends Fragment implements Constants {
     private SharedPreferences mSetting;
 //    private FragmentMainBinding binding;
 
-    private BottomNavigationView.OnNavigationItemSelectedListener selectedListener = item -> {
-        ((SupportItemSelect) requireContext()).NavigationItemSelected(item);
-        return false;
-    };
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_my_setting, container, false);
 //        binding = FragmentMainBinding.inflate(inflater, container, false);
 //        View view = binding.getRoot();
-        BottomNavigationView navView = view.findViewById(R.id.nav_view);
-        navView.getMenu().findItem(R.id.navigation_setting).setChecked(true);
-        navView.setOnNavigationItemSelectedListener(selectedListener);
         return view;
     }
 

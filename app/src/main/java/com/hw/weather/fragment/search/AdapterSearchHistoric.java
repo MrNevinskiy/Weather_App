@@ -43,9 +43,10 @@ public class AdapterSearchHistoric extends RecyclerView.Adapter<AdapterSearchHis
         holder.date.setText(weatherCity.date);
         holder.temp.setText(weatherCity.temp);
 
-        holder.cardView.setOnClickListener(view -> {
-            weatherSource.removeCity(weatherCity);
+        holder.cardView.setOnLongClickListener(view -> {
+            weatherSource.deleteAllCity();
             notifyDataSetChanged();
+            return true;
         });
     }
 

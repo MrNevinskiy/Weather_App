@@ -3,6 +3,9 @@ package com.hw.weather.fragment.main;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -21,21 +24,23 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Toast;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.snackbar.BaseTransientBottomBar;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textview.MaterialTextView;
 import com.hw.weather.Constants;
 import com.hw.weather.OpenWeatherByCoordinates;
-import com.hw.weather.OpenWeatherByName;
 import com.hw.weather.R;
-import com.hw.weather.SupportItemSelect;
 import com.hw.weather.fragment.main.weatherForecastView.SourceList;
 import com.hw.weather.fragment.main.weatherForecastView.WeatherList;
 import com.hw.weather.fragment.weatherRequest.MainWeather;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.util.Calendar;
 import java.util.Objects;
 
 import retrofit2.Call;
@@ -47,21 +52,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MainFragment extends Fragment implements Constants {
 
     private SharedPreferences mSetting;
-    private OpenWeatherByName openWeatherByName;
     private OpenWeatherByCoordinates openWeatherByCoordinates;
     private ImageView weatherIcon;
-    private MaterialTextView temperatureFragment;
-    private MaterialTextView cityFragment;
-//    private FragmentMainBinding binding;
 
-    private void initRetrofitByName() {
-        Retrofit retrofit;
-        retrofit = new Retrofit.Builder()
-                .baseUrl("https://api.openweathermap.org/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        openWeatherByName = retrofit.create(OpenWeatherByName.class);
-    }
     private void initRetrofitByCoord() {
         Retrofit retrofit;
         retrofit = new Retrofit.Builder()
@@ -69,27 +62,6 @@ public class MainFragment extends Fragment implements Constants {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         openWeatherByCoordinates = retrofit.create(OpenWeatherByCoordinates.class);
-    }
-
-    private void requestRetrofitByName(String cityCountry, String keyApi, View view) {
-        openWeatherByName.loadWeather(cityCountry, keyApi)
-                .enqueue(new Callback<MainWeather>() {
-                    @Override
-                    public void onResponse(Call<MainWeather> call, Response<MainWeather> response) {
-                        if (response.body() != null) {
-                            CurrentWeatherIcon(response);
-                            Double temp = response.body().getMain().getTemp() + absoluteZero;
-                            temperatureFragment.setText(String.format("%+.0f", temp));
-                            cityFragment.setText("Moscow");
-                            Snackbar.make(view, "up", BaseTransientBottomBar.LENGTH_SHORT).show();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<MainWeather> call, Throwable t) {
-                        Snackbar.make(view, "Error", BaseTransientBottomBar.LENGTH_SHORT).show();
-                    }
-                });
     }
 
     private void requestRetrofitByCoord(String latitude, String longitude) {
@@ -101,9 +73,24 @@ public class MainFragment extends Fragment implements Constants {
                         if (response.body() != null) {
                             CurrentWeatherIcon(response);
                             String name = response.body().getName() + ", " + response.body().getSys().getCountry();
-                            String temp = String.format(String.valueOf(response.body().getMain().getTemp() + absoluteZero));
-                            temperatureFragment.setText(temp);
-                            cityFragment.setText(name);
+                            String temp = String.valueOf(response.body().getMain().getTemp() + absoluteZero).substring(0,2) + "°C";
+                            String tempMin = String.valueOf(response.body().getMain().getTempMin() + absoluteZero).substring(0,2) + "°C";
+                            String tempMax = String.valueOf(response.body().getMain().getTempMax() + absoluteZero).substring(0,2) + "°C";
+                            long press =  response.body().getVisibility().longValue();
+                            Double wind = response.body().getWind().getSpeed().doubleValue();
+                            String up = Calendar.getInstance().getTime().toString();
+                            mSetting = requireContext().getSharedPreferences(APP_PREFERENCES,Context.MODE_PRIVATE);
+                            SharedPreferences.Editor editor = mSetting.edit();
+                            editor.putString(APP_PREFERENCES_CITY, name);
+                            editor.putString(APP_PREFERENCES_TEMPERATURE, temp);
+                            editor.putString(APP_PREFERENCES_TEMPERATURE_MIN, tempMin);
+                            editor.putString(APP_PREFERENCES_TEMPERATURE_MAX, tempMax);
+                            editor.putString(APP_PREFERENCES_DATE, up);
+                            editor.putString(APP_PREFERENCES_UPDATE, up);
+                            editor.putString(APP_PREFERENCES_PRESSURE_INFO, String.valueOf(press));
+                            editor.putString(APP_PREFERENCES_WIND_SPEED_INFO, String.valueOf(wind));
+                            editor.apply();
+                            getPrefSetting();
                         }
                     }
 
@@ -121,6 +108,7 @@ public class MainFragment extends Fragment implements Constants {
             Log.d(TAG, "mapRequest: "+ lat + " ," + lon);
             initRetrofitByCoord();
             requestRetrofitByCoord(lat, lon);
+
         });
     }
 
@@ -128,6 +116,33 @@ public class MainFragment extends Fragment implements Constants {
         Picasso.get()
                 .load("https://openweathermap.org/img/wn/" + response.body().getWeather().get(0).getIcon() + "@4x.png")
                 .into(weatherIcon);
+        Picasso.get()
+                .load("https://openweathermap.org/img/wn/" + response.body().getWeather().get(0).getIcon() + "@4x.png")
+                .into(new Target() {
+                    @Override
+                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                        weatherIcon.setImageBitmap(bitmap);
+                        File directory = requireActivity().getDir("icon", Context.MODE_PRIVATE);
+                        File file = new File(directory,"icon.png");
+                        try (FileOutputStream fileOutputStream = new FileOutputStream(file)){
+                            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        String path = directory.getAbsolutePath();
+                        mSetting.edit().putString(APP_PREFERENCES_ICON, path + "/icon.png").apply();
+                    }
+
+                    @Override
+                    public void onBitmapFailed(Exception e, Drawable errorDrawable) {
+
+                    }
+
+                    @Override
+                    public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+                    }
+                });
     }
 
     @Override
@@ -138,16 +153,7 @@ public class MainFragment extends Fragment implements Constants {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
-//        binding = FragmentMainBinding.inflate(inflater, container, false);
-//        View view = binding.getRoot();
-        BottomNavigationView navView = view.findViewById(R.id.nav_view_home);
-        navView.getMenu().findItem(R.id.navigation_home).setChecked(true);
-        navView.setOnNavigationItemSelectedListener(selectedListener);
         weatherIcon = view.findViewById(R.id.weatherIcon);
-        temperatureFragment = view.findViewById(R.id.temperatureFragment);
-        cityFragment = view.findViewById(R.id.cityFragment);
-//        initRetrofitByName();
-//        requestRetrofit("Moscow,RU", WEATHER_API_KEY, view);
         return view;
     }
 
@@ -161,10 +167,6 @@ public class MainFragment extends Fragment implements Constants {
         testFragmentResult();
     }
 
-    private BottomNavigationView.OnNavigationItemSelectedListener selectedListener = item -> {
-        ((SupportItemSelect) requireContext()).NavigationItemSelected(item);
-        return false;
-    };
 
     private void checkCity(@NonNull View view) {
         ImageButton infoCity = view.findViewById(R.id.infoCity);
@@ -207,6 +209,17 @@ public class MainFragment extends Fragment implements Constants {
         if (mSetting.contains(APP_PREFERENCES_CITY)) {
             MaterialTextView textView = (MaterialTextView) getView().findViewById(R.id.cityFragment);
             textView.setText(mSetting.getString(APP_PREFERENCES_CITY, "City"));
+        } if (mSetting.contains(APP_PREFERENCES_ICON)) {
+            try {
+            ImageView imageView = (ImageView) getView().findViewById(R.id.weatherIcon);
+            File file = new File("/data/data/com.hw.weather.pro/app_icon/icon.png");
+            Bitmap bitmap = null;
+                bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
+            imageView.setImageBitmap(bitmap);
+            } catch (FileNotFoundException e) {
+                Log.w("File Not Found Exception",e);
+                e.printStackTrace();
+            }
         }
         if (mSetting.contains(APP_PREFERENCES_PRESSURE)) {
             getView().findViewById(R.id.pressureFragment).setVisibility((mSetting.getBoolean(APP_PREFERENCES_PRESSURE, true)) ? View.GONE : View.VISIBLE);
@@ -216,7 +229,15 @@ public class MainFragment extends Fragment implements Constants {
         }
         if (mSetting.contains(APP_PREFERENCES_TEMPERATURE)) {
             MaterialTextView textView = (MaterialTextView) getView().findViewById(R.id.temperatureFragment);
-            textView.setText(mSetting.getString(APP_PREFERENCES_TEMPERATURE, "Температура 22°"));
+            textView.setText(mSetting.getString(APP_PREFERENCES_TEMPERATURE, "null"));
+        }
+        if (mSetting.contains(APP_PREFERENCES_TEMPERATURE_MIN)) {
+            MaterialTextView textView = (MaterialTextView) getView().findViewById(R.id.temp_min);
+            textView.setText(mSetting.getString(APP_PREFERENCES_TEMPERATURE_MIN, "null"));
+        }
+        if (mSetting.contains(APP_PREFERENCES_TEMPERATURE_MAX)) {
+            MaterialTextView textView = (MaterialTextView) getView().findViewById(R.id.temp_max);
+            textView.setText(mSetting.getString(APP_PREFERENCES_TEMPERATURE_MAX, "null"));
         }
         if (mSetting.contains(APP_PREFERENCES_DATE)) {
             MaterialTextView textView = (MaterialTextView) getView().findViewById(R.id.dateFragment);
@@ -224,11 +245,11 @@ public class MainFragment extends Fragment implements Constants {
         }
         if (mSetting.contains(APP_PREFERENCES_PRESSURE_INFO)) {
             MaterialTextView textView = (MaterialTextView) getView().findViewById(R.id.pressureFragment);
-            textView.setText(mSetting.getString(APP_PREFERENCES_PRESSURE_INFO, "Давление 739.00 мм."));
+            textView.setText(mSetting.getString(APP_PREFERENCES_PRESSURE_INFO, "null"));
         }
         if (mSetting.contains(APP_PREFERENCES_WIND_SPEED_INFO)) {
             MaterialTextView textView = (MaterialTextView) getView().findViewById(R.id.windSpeedFragment);
-            textView.setText(mSetting.getString(APP_PREFERENCES_WIND_SPEED_INFO, "Скорость ветра 5 м.с"));
+            textView.setText(mSetting.getString(APP_PREFERENCES_WIND_SPEED_INFO, "null"));
         }
     }
 }

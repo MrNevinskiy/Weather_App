@@ -47,14 +47,6 @@
             </intent-filter>
         </receiver>
 
-        <service
-            android:name=".service.WeatherServiceUpDate"
-            android:enabled="true"
-            android:exported="false" />
-        <service
-            android:name=".service.MyIntentService"
-            android:exported="false" />
-
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

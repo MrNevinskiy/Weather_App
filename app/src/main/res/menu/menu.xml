@@ -3,18 +3,6 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/action_add"
-        android:orderInCategory="10"
-        android:title="@string/add"
-        android:icon="@android:drawable/ic_menu_add"
-        app:showAsAction="always" />
-    <item
-        android:id="@+id/action_clear"
-        android:orderInCategory="20"
-        android:title="@string/clear"
-        android:icon="@android:drawable/ic_menu_close_clear_cancel"
-        app:showAsAction="never" />
-    <item
         android:id="@+id/action_search"
         android:orderInCategory="5"
         android:title="@string/search"
