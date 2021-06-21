@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,10 +27,10 @@ import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textview.MaterialTextView;
 import com.hw.weather.Constants;
-import com.hw.weather.OpenWeather;
+import com.hw.weather.OpenWeatherByCoordinates;
+import com.hw.weather.OpenWeatherByName;
 import com.hw.weather.R;
 import com.hw.weather.SupportItemSelect;
-import com.hw.weather.databinding.FragmentMainBinding;
 import com.hw.weather.fragment.main.weatherForecastView.SourceList;
 import com.hw.weather.fragment.main.weatherForecastView.WeatherList;
 import com.hw.weather.fragment.weatherRequest.MainWeather;
@@ -46,27 +47,36 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MainFragment extends Fragment implements Constants {
 
     private SharedPreferences mSetting;
-    private OpenWeather openWeather;
+    private OpenWeatherByName openWeatherByName;
+    private OpenWeatherByCoordinates openWeatherByCoordinates;
     private ImageView weatherIcon;
     private MaterialTextView temperatureFragment;
     private MaterialTextView cityFragment;
 //    private FragmentMainBinding binding;
 
-    private void initRetrofit(){
+    private void initRetrofitByName() {
         Retrofit retrofit;
         retrofit = new Retrofit.Builder()
                 .baseUrl("https://api.openweathermap.org/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-        openWeather = retrofit.create(OpenWeather.class);
+        openWeatherByName = retrofit.create(OpenWeatherByName.class);
+    }
+    private void initRetrofitByCoord() {
+        Retrofit retrofit;
+        retrofit = new Retrofit.Builder()
+                .baseUrl("https://api.openweathermap.org/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        openWeatherByCoordinates = retrofit.create(OpenWeatherByCoordinates.class);
     }
 
-    private void requestRetrofit(String cityCountry, String keyApi, View view){
-        openWeather.loadWeather(cityCountry, keyApi)
+    private void requestRetrofitByName(String cityCountry, String keyApi, View view) {
+        openWeatherByName.loadWeather(cityCountry, keyApi)
                 .enqueue(new Callback<MainWeather>() {
                     @Override
                     public void onResponse(Call<MainWeather> call, Response<MainWeather> response) {
-                        if(response.body() != null){
+                        if (response.body() != null) {
                             CurrentWeatherIcon(response);
                             Double temp = response.body().getMain().getTemp() + absoluteZero;
                             temperatureFragment.setText(String.format("%+.0f", temp));
@@ -82,9 +92,41 @@ public class MainFragment extends Fragment implements Constants {
                 });
     }
 
+    private void requestRetrofitByCoord(String latitude, String longitude) {
+        Log.d(TAG, "requestRetrofitByCoordinates: "+ latitude + " ," + longitude + " ," + WEATHER_API_KEY);
+        openWeatherByCoordinates.loadWeather(latitude, longitude, WEATHER_API_KEY)
+                .enqueue(new Callback<MainWeather>() {
+                    @Override
+                    public void onResponse(Call<MainWeather> call, Response<MainWeather> response) {
+                        if (response.body() != null) {
+                            CurrentWeatherIcon(response);
+                            String name = response.body().getName() + ", " + response.body().getSys().getCountry();
+                            String temp = String.format(String.valueOf(response.body().getMain().getTemp() + absoluteZero));
+                            temperatureFragment.setText(temp);
+                            cityFragment.setText(name);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<MainWeather> call, Throwable throwable) {
+                        Log.e(TAG, "onFailure: " + throwable);
+                    }
+                });
+    }
+
+    private void testFragmentResult(){
+        getParentFragmentManager().setFragmentResultListener("mapRequest", this, (requestKey, bundle) -> {
+            String lat = bundle.getString("lat");
+            String lon = bundle.getString("lon");
+            Log.d(TAG, "mapRequest: "+ lat + " ," + lon);
+            initRetrofitByCoord();
+            requestRetrofitByCoord(lat, lon);
+        });
+    }
+
     private void CurrentWeatherIcon(Response<MainWeather> response) {
         Picasso.get()
-                .load("https://i.ibb.co/0D17WKS/night-fog.png")
+                .load("https://openweathermap.org/img/wn/" + response.body().getWeather().get(0).getIcon() + "@4x.png")
                 .into(weatherIcon);
     }
 
@@ -104,7 +146,7 @@ public class MainFragment extends Fragment implements Constants {
         weatherIcon = view.findViewById(R.id.weatherIcon);
         temperatureFragment = view.findViewById(R.id.temperatureFragment);
         cityFragment = view.findViewById(R.id.cityFragment);
-        initRetrofit();
+//        initRetrofitByName();
 //        requestRetrofit("Moscow,RU", WEATHER_API_KEY, view);
         return view;
     }
@@ -116,6 +158,7 @@ public class MainFragment extends Fragment implements Constants {
         getCityList(weatherList.build(), view);
         checkCity(view);
         getPrefSetting();
+        testFragmentResult();
     }
 
     private BottomNavigationView.OnNavigationItemSelectedListener selectedListener = item -> {
@@ -126,7 +169,7 @@ public class MainFragment extends Fragment implements Constants {
     private void checkCity(@NonNull View view) {
         ImageButton infoCity = view.findViewById(R.id.infoCity);
         infoCity.setOnClickListener((View view3) -> {
-            mSetting = requireContext().getSharedPreferences(APP_PREFERENCES,Context.MODE_PRIVATE);
+            mSetting = requireContext().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
             String city = (Objects.requireNonNull(mSetting.getString(APP_PREFERENCES_CITY, "City")));
             String url = "https://www.google.ru/search?newwindow=1&q=" + city;
             Uri uri = Uri.parse(url);
@@ -152,7 +195,7 @@ public class MainFragment extends Fragment implements Constants {
     }
 
     public void getPrefSetting() {
-        mSetting = requireContext().getSharedPreferences(APP_PREFERENCES,Context.MODE_PRIVATE);
+        mSetting = requireContext().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
         if (mSetting.contains(APP_PREFERENCES_NIGHT)) {
             boolean theme = mSetting.getBoolean(APP_PREFERENCES_NIGHT, false);
             if (theme) {

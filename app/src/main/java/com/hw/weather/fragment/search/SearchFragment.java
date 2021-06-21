@@ -21,7 +21,7 @@ import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 import com.hw.weather.Constants;
-import com.hw.weather.OpenWeather;
+import com.hw.weather.OpenWeatherByName;
 import com.hw.weather.R;
 import com.hw.weather.SupportItemSelect;
 import com.hw.weather.fragment.main.MainFragment;
@@ -46,10 +46,10 @@ public class SearchFragment extends Fragment implements Constants {
 
     private SharedPreferences mSetting;
     private AdapterSearchHistoric adapterSearchHistoric;
-    private OpenWeather openWeather;
+    private OpenWeatherByName openWeatherByName;
     private WeatherSource weatherSource;
 //    private FragmentMainBinding binding;
-    String country;
+    private String country;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -78,11 +78,11 @@ public class SearchFragment extends Fragment implements Constants {
                 .baseUrl("https://api.openweathermap.org/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-        openWeather = retrofit.create(OpenWeather.class);
+        openWeatherByName = retrofit.create(OpenWeatherByName.class);
     }
 
     private void requestRetrofit(String cityCountry, String keyApi, View view){
-        openWeather.loadWeather(cityCountry, keyApi)
+        openWeatherByName.loadWeather(cityCountry, keyApi)
                 .enqueue(new Callback<MainWeather>() {
                     @Override
                     public void onResponse(Call<MainWeather> call, Response<MainWeather> response) {
